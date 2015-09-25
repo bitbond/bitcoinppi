@@ -1,0 +1,55 @@
+<div id="bitcoinppi-global-dashboard" style="width: 960px; margin: 0 auto">
+  <div id="bitcoinppi-global-chart" style="width: 960px; height: 400px"></div>
+  <div id="bitcoinppi-global-filter-control" style="width: 960px; height: 75px"></div>
+</div>
+
+<% content_for :script do %>
+<script type="text/javascript">
+google.setOnLoadCallback(drawChart);
+google.load("visualization", "1.1", { packages: ["corechart", "controls"] });
+
+function drawChart() {
+  var data = new google.visualization.DataTable(<%= ChartData.global_data_table.to_json %>);
+  var chart = new google.visualization.ChartWrapper({
+    chartType: "LineChart",
+    containerId: "bitcoinppi-global-chart",
+    options: {
+      chartArea: { width: "90%", height: "80%" },
+      hAxis: { slantedText: false },
+      legend: { position: "none" },
+      focusTarget: "category",
+      crosshair: {
+        trigger: "both",
+        orientation: "vertical",
+        opacity: "0.5"
+      },
+      title: "bitcoinppi global"
+    }
+  });
+
+  var dashboard = new google.visualization.Dashboard(document.getElementById("bitcoinppi-global-dashboard"));
+  var rangeFilter = new google.visualization.ControlWrapper({
+    controlType: "google.visualization.ChartRangeFilter",
+    containerId: "bitcoinppi-global-filter-control",
+    options: {
+      filterColumnIndex: 0,
+      ui: {
+        chartType: "LineChart",
+        chartOptions: {
+          curveType: "function",
+          chartArea: { width: "90%", height: "80%" },
+          hAxis: {
+            baselineColor: "none"
+          }
+        },
+        minRangeSize: 86400000 // 1 day
+      }
+    }
+  });
+
+  dashboard.bind(rangeFilter, chart);
+  dashboard.draw(data);
+};
+</script>
+<% end %>
+
