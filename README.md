@@ -14,8 +14,6 @@ In general the data is updated every 15 minutes. Caching rules are set to store 
 This endpoint returns the latest known global ppi as within the last 24 hours.
 In addition to that it also returns the average global ppi as within the last 24 hours.
 
-    curl http://bitcoinppi.org/v1/spot
-
 **Response:**
 
     HTTP/1.1 200 OK
