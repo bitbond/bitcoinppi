@@ -14,3 +14,6 @@ group :test do
   gem "timecop"
 end
 
+group :development do
+  gem "git-deploy"
+end
