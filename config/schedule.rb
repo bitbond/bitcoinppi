@@ -6,7 +6,10 @@ every 15.minutes do
   source "bitcoinaverage"
 end
 
-every 1.day do
+every 1.week do
   source "bigmac_prices"
+  source "weights"
+  source "historical_bitcoinaverage"
+  source "historical_quandl"
 end
 
