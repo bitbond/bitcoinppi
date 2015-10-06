@@ -1,2 +1,4 @@
 .rbenv-*
-.database_credentials
+config/.database_credentials
+log
+

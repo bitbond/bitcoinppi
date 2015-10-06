@@ -22,7 +22,8 @@ rbenv rehash
 bundler install --deployment --binstubs ./bin
 
 # Configuration
-cp -v ~/.database_credentials ./
+cp -v ~/.database_credentials ./config/
+whenever --update-crontab
 
 run deploy/before_restart
 run deploy/restart && run deploy/after_restart

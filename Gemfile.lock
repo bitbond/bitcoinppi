@@ -8,6 +8,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     backports (3.6.6)
+    chronic (0.10.2)
     daemons (1.2.3)
     database_cleaner (1.5.0)
     eventmachine (1.0.8)
@@ -55,6 +56,8 @@ GEM
     timecop (0.8.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    whenever (0.9.4)
+      chronic (>= 0.6.3)
 
 PLATFORMS
   ruby
@@ -71,6 +74,7 @@ DEPENDENCIES
   sinatra-contrib
   thin
   timecop
+  whenever
 
 BUNDLED WITH
    1.10.6
