@@ -16,13 +16,13 @@ git submodule sync && git submodule update --init --recursive
 # Install dependencies
 source ~/.rbenvrc
 
-rbenv install `cat .ruby-version`
+rbenv install --keep --skip-existing `cat .ruby-version`
 gem install bundler
 rbenv rehash
 bundler install --deployment --binstubs ./bin
 
 # Configuration
-cp ~/.database_credentials ./
+cp -v ~/.database_credentials ./
 
 run deploy/before_restart
 run deploy/restart && run deploy/after_restart
