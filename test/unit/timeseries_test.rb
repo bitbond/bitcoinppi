@@ -71,17 +71,23 @@ describe Timeseries do
       let(:timeseries) { Timeseries.new(from: today - 7.days, to: today, tick: "1 day", query: "SELECT * FROM series") }
 
       it "should provide ticks within the given time range" do
-        values = timeseries.dataset.flat_map(&:values)
-        assert_starts_with [today - 7.days, today - 6.days], values
-        assert_ends_with  [today - 1.day, today], values
-        assert_equal 8, values.size
+        ticks = timeseries.dataset.map { |row| row[:tick] }
+        assert_starts_with [today - 7.days, today - 6.days], ticks
+        assert_ends_with  [today - 1.day, today], ticks
+        assert_equal 8, ticks.size
+      end
+
+      it "should provide tick_end within the given time range" do
+        (tick, tick_end), _ = timeseries.dataset.map(&:values)
+        assert_equal today - 7.days, tick
+        assert_equal today - 6.days, tick_end
       end
 
       it "should allow ticks to be of varying size" do
         timeseries = Timeseries.new(from: yesterday, to: today, tick: "15 minutes", query: "SELECT * FROM series")
-        values = timeseries.dataset.flat_map(&:values)
-        assert_starts_with [yesterday, yesterday + 15.minutes, yesterday + 30.minutes], values
-        assert_ends_with  [today - 30.minutes, today - 15.minutes, today], values
+        ticks = timeseries.dataset.map { |row| row[:tick] }
+        assert_starts_with [yesterday, yesterday + 15.minutes, yesterday + 30.minutes], ticks
+        assert_ends_with  [today - 30.minutes, today - 15.minutes, today], ticks
       end
     end
 
@@ -139,11 +145,11 @@ describe Timeseries do
             [:currency, :time,              :price],
             ["USD",     today,                 1.0], # usd day open
             ["USD",     today +  5.seconds,    0.9], # irrelevant to unit of time 'minute', thus not returned, but represents low for this minute
-            ["USD",     today + 15.minutes,    2.0], # usd day high
-            ["USD",     today + 30.minutes,    0.5], # usd day close, usd day low
+            ["USD",     today + 16.minutes,    2.0], # usd day high
+            ["USD",     today + 31.minutes,    0.5], # usd day close, usd day low
             ["EUR",     today,                 1.2], # eur day open, day low
-            ["EUR",     today + 15.minutes,    1.8],
-            ["EUR",     today + 30.minutes,    2.4]  # eur day close, day high
+            ["EUR",     today + 17.minutes,    1.8],
+            ["EUR",     today + 33.minutes,    2.4]  # eur day close, day high
           ]
         )
       end
@@ -163,6 +169,14 @@ describe Timeseries do
       it "should return one row per currency per unit of time" do
         assert_equal 6, per_minute.all.size
         assert_equal 2, per_day.all.size
+      end
+
+      it "should return the exact tick from series" do
+        assert_equal [
+          today,
+          today + 15.minutes,
+          today + 30.minutes
+        ], per_minute.all.map { |row| row[:tick] }.uniq
       end
 
       it "should provide lowest price per currency per unit of time" do

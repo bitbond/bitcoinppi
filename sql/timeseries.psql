@@ -3,7 +3,9 @@
 
 -- calendar table
 WITH series AS (
-  SELECT s.tick AS tick
+  SELECT
+    s.tick AS tick,
+    s.tick + interval :tick AS tick_end
   FROM generate_series(:from::timestamptz, :to::timestamptz, :tick) AS s(tick)
 ),
 -- get all bigmac prices with start - end timeframes
@@ -24,13 +26,14 @@ bitcoin_prices AS (
     SELECT
       currency,
       time,
-      date_trunc(:date_trunc, time) AS tick,
+      series.tick AS tick,
       min(price) OVER w AS low,
       max(price) OVER w as high,
       first_value(price) OVER w AS open,
       last_value(price) OVER w AS close,
       rank() OVER w AS rank
     FROM bitcoin_prices
+    JOIN series ON time >= series.tick AND time < series.tick_end
     WHERE time BETWEEN :from::timestamptz AND :to::timestamptz
     WINDOW w AS (
       PARTITION BY currency, date_trunc(:date_trunc, time)
