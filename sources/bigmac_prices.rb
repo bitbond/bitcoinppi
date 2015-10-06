@@ -2,7 +2,7 @@ require_relative "../boot.rb"
 require "open-uri"
 require "csv"
 
-table = CSV.parse(open(BigmacPrice::MASTER_URL))
+table = CSV.parse(open("https://docs.google.com/spreadsheet/ccc?key=1RKdZ_mdyOZKyIHyqJmg84-WE-SiYXjtOmVkaexn57YI&output=csv"))
 headers = table.shift(2)
 _, *countries = headers[0]
 _, *currencies = headers[1]
