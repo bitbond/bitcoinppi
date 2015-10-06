@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash --login
 set -e
 oldrev=$1
 newrev=$2
@@ -14,6 +14,8 @@ umask 002
 git submodule sync && git submodule update --init --recursive
 
 # Install dependencies
+source ~/.rbenvrc
+
 rbenv install `cat .ruby-version`
 gem install bundler
 rbenv rehash

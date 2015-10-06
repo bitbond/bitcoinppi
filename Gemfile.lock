@@ -11,6 +11,10 @@ GEM
     daemons (1.2.3)
     database_cleaner (1.5.0)
     eventmachine (1.0.8)
+    git-deploy (0.6.1)
+      net-scp (~> 1.1.0)
+      net-ssh (~> 2.6.6)
+      thor (= 0.14.6)
     i18n (0.7.0)
     json (1.8.3)
     metaclass (0.0.4)
@@ -18,6 +22,9 @@ GEM
     mocha (1.1.0)
       metaclass (~> 0.0.1)
     multi_json (1.11.2)
+    net-scp (1.1.2)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.6.8)
     pg (0.18.3)
     rack (1.6.4)
     rack-cache (1.2)
@@ -42,6 +49,7 @@ GEM
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0)
       rack (~> 1.0)
+    thor (0.14.6)
     thread_safe (0.3.5)
     tilt (2.0.1)
     timecop (0.8.0)
@@ -54,6 +62,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   database_cleaner
+  git-deploy
   mocha
   pg
   rack-cache
