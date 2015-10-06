@@ -21,6 +21,9 @@ gem install bundler
 rbenv rehash
 bundler install --deployment --binstubs ./bin
 
+# Configuration
+cp ~/.database_credentials ./
+
 run deploy/before_restart
 run deploy/restart && run deploy/after_restart
 

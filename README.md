@@ -119,7 +119,7 @@ This endpoint returns both data from `/v1/spot` and `/v1/countries` combined.
 ## Development
 
 * Make sure you have matching Ruby version according to `.ruby-version`
-* Requires a running PostgreSQL (>= 9.4) installation on localhost. Currently the connection string is fixed to a passwordless user named 'lukas'.
+* Requires a running PostgreSQL (>= 9.4) installation on localhost.
 * Create necessary databases:
 
         $ createdb bitcoinppi_development
@@ -129,6 +129,12 @@ This endpoint returns both data from `/v1/spot` and `/v1/countries` combined.
 
         $ gem install bundler
         $ bundle
+
+* Setup your database credentials:
+
+        $ echo 'user:password' > .database_credentials # user with password
+        $ echo 'user:' > .database_credentials         # passwordless-user
+        $ chmod 600 .database_credentials
 
 * Run tests:
 
