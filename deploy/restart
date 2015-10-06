@@ -8,5 +8,5 @@ fi
 
 export RACK_ENV=production
 echo "restarting Thin"
-./bin/thin --environment production --socket /var/tmp/bitcoinppi.org.sock --pid tmp/thin.pid --log logs/thin.log --daemonize $command
+./bin/thin --environment production --socket /var/tmp/bitcoinppi.org.sock --pid tmp/thin.pid --log log/thin.log --daemonize $command
 
