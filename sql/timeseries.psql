@@ -36,7 +36,7 @@ bitcoin_prices AS (
     JOIN series ON time >= series.tick AND time < series.tick_end
     WHERE time BETWEEN :from::timestamptz AND :to::timestamptz
     WINDOW w AS (
-      PARTITION BY currency, date_trunc(:date_trunc, time)
+      PARTITION BY currency, series.tick
       ORDER BY time
       RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
     )
