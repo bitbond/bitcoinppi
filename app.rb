@@ -2,10 +2,7 @@ require_relative "./boot.rb"
 require "sinatra"
 require "sinatra/content_for"
 require "sinatra/json"
-require "rack/cache"
 require "securerandom"
-
-use Rack::Cache
 
 helpers do
   def current_etag

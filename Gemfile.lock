@@ -28,8 +28,6 @@ GEM
     net-ssh (2.6.8)
     pg (0.18.3)
     rack (1.6.4)
-    rack-cache (1.2)
-      rack (>= 0.4)
     rack-protection (1.5.3)
       rack
     rack-test (0.6.3)
@@ -68,7 +66,6 @@ DEPENDENCIES
   git-deploy
   mocha
   pg
-  rack-cache
   sequel
   sinatra
   sinatra-contrib

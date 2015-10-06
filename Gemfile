@@ -6,7 +6,6 @@ gem "thin"
 gem "pg"
 gem "sequel"
 gem "activesupport"
-gem "rack-cache"
 gem "whenever"
 
 group :test do
