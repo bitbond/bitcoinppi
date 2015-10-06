@@ -81,6 +81,8 @@ module Bitcoinppi
         bitcoin_price_close,
         bigmac_price_close,
         weight,
+        local_country_ppi,
+        local_avg_country_ppi,
         weighted_country_ppi,
         weighted_avg_country_ppi
       FROM (
@@ -91,6 +93,8 @@ module Bitcoinppi
           bitcoin_prices.close AS bitcoin_price_close,
           bigmac_prices.price AS bigmac_price_close,
           COALESCE(weights.weight, 1) AS weight,
+          bitcoin_prices.close / bigmac_prices.price AS local_country_ppi,
+          avg(bitcoin_prices.close / bigmac_prices.price) OVER w AS local_avg_country_ppi,
           bitcoin_prices.close / bigmac_prices.price * COALESCE(weights.weight, 1) AS weighted_country_ppi,
           avg(bitcoin_prices.close / bigmac_prices.price * COALESCE(weights.weight, 1)) OVER w AS weighted_avg_country_ppi,
           rank() OVER w AS rank
