@@ -5,9 +5,12 @@ gem "sinatra-contrib"
 gem "thin"
 gem "pg"
 gem "sequel"
+gem "activesupport"
+gem "rack-cache"
 
 group :test do
   gem "mocha"
-  gem "minitest-hooks"
+  gem "database_cleaner"
+  gem "timecop"
 end
 

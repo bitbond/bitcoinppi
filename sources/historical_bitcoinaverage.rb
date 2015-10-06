@@ -4,7 +4,7 @@ require "csv"
 
 url = "https://api.bitcoinaverage.com/history/%s/per_day_all_time_history.csv"
 
-DB[:bitcoin_rates].truncate
+DB[:bitcoin_prices].truncate
 currencies = %w[AUD BRL CAD CHF CNY EUR GBP IDR ILS MXN NOK NZD PLN RON RUB SEK SGD USD ZAR]
 wait = 1
 while (currency = currencies.pop) do
@@ -16,7 +16,7 @@ while (currency = currencies.pop) do
     values = csv.map do |row|
       [currency, row["datetime"], row["average"]]
     end
-    DB[:bitcoin_rates].import([:currency, :timestamp, :rate], values)
+    DB[:bitcoin_prices].import([:currency, :time, :price], values)
     puts "imported #{values.size} entries for #{currency}"
   rescue OpenURI::HTTPError => e
     if e.message =~ /429/ # too many requests
