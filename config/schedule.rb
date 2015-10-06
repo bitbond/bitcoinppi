@@ -1,6 +1,6 @@
 set :output, error: "log/cron.err", standard: "log/cron.log"
 
-job_type :source, "cd :path && ruby sources/:task.rb :output"
+job_type :source, "cd :path && bundle exec ruby sources/:task.rb :output"
 
 every 15.minutes do
   source "bitcoinaverage"
