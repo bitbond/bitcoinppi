@@ -132,9 +132,9 @@ This endpoint returns both data from `/v1/spot` and `/v1/countries` combined.
 
 * Setup your database credentials:
 
-        $ echo 'user:password' > .database_credentials # user with password
-        $ echo 'user:' > .database_credentials         # passwordless-user
-        $ chmod 600 .database_credentials
+        $ echo 'user:password' > config/.database_credentials # user with password
+        $ echo 'user:' > config/.database_credentials         # passwordless-user
+        $ chmod 600 config/.database_credentials
 
 * Run tests:
 
