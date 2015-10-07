@@ -6,7 +6,7 @@ WITH series AS (
   SELECT
     s.tick AS tick,
     s.tick + interval :tick AS tick_end
-  FROM generate_series(:from::timestamptz, :to::timestamptz, :tick) AS s(tick)
+  FROM generate_series(date_trunc(:date_trunc, :from::timestamptz), date_trunc(:date_trunc, :to::timestamptz), :tick) AS s(tick)
 ),
 -- get all bigmac prices with start - end timeframes
 bigmac_prices AS (
@@ -28,7 +28,6 @@ bitcoin_prices AS (
     rank() OVER w AS rank
   FROM bitcoin_prices
   JOIN series ON time >= series.tick AND time < series.tick_end
-  WHERE time BETWEEN :from::timestamptz AND :to::timestamptz
   WINDOW w AS (
     PARTITION BY currency, series.tick
     ORDER BY time

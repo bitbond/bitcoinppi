@@ -3,7 +3,7 @@ class Timeframe
   class Invalid < StandardError; end
   OLDEST = DateTime.parse("2011-07-01 UTC")
   VALID_TICKS = [
-    "1 week",
+    "7 days",
     "1 day",
     "12 hours",
     "6 hours",
