@@ -4,17 +4,8 @@ require "sinatra/content_for"
 require "sinatra/json"
 require "securerandom"
 
-helpers do
-  def current_etag
-    $current_etag ||= SecureRandom.uuid
-  end
-end
-
 before do
-  unless params[:bypass_caches]
-    etag current_etag
-    cache_control :public, max_age: 15.minutes
-  end
+  cache_control :public, max_age: 15.minutes unless params[:bypass_caches]
 end
 
 get "/" do
@@ -35,10 +26,5 @@ end
 
 get "/v1/full", provides: "json" do
   json spot: Bitcoinppi.spot, countries: Bitcoinppi.weighted_countries
-end
-
-post "/internal/refresh" do
-  $current_etag = nil
-  "ok"
 end
 
