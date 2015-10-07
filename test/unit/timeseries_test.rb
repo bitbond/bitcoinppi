@@ -136,8 +136,8 @@ describe Timeseries do
     end
 
     describe "bitcoin subquery" do
-      let(:per_minute) { Timeseries.new(tick: "15 minutes", query: "SELECT * FROM bitcoin_prices").dataset }
-      let(:per_day) { Timeseries.new(tick: "1 day", query: "SELECT * FROM bitcoin_prices").dataset }
+      let(:per_minute) { Timeseries.new(tick: "15 minutes", query: "SELECT * FROM bitcoin_prices WHERE rank = 1").dataset }
+      let(:per_day) { Timeseries.new(tick: "1 day", query: "SELECT * FROM bitcoin_prices WHERE rank = 1").dataset }
 
       before do
         import(
@@ -154,21 +154,24 @@ describe Timeseries do
         )
       end
 
-      it "should provide currency, time fields plus low, high, open, close and rank" do
-        assert_equal %i[currency time tick low high open close rank], per_day.first.keys
+      it "should provide currency, time fields plus tick, close and rank" do
+        assert_equal %i[currency time tick close rank], per_day.first.keys
       end
 
       it "should scope results within the given timeframe" do
         import(bitcoin_prices: [ [:currency, :time, :price], ["USD", yesterday, 5.0] ])
         timeseries = Timeseries.new(from: today, to: today.end_of_day, tick: "15 minutes", query: "SELECT * FROM bitcoin_prices")
-        assert_equal 6, timeseries.dataset.all.size
-        timeseries = Timeseries.new(from: yesterday, to: today.end_of_day, tick: "15 minutes", query: "SELECT * FROM bitcoin_prices")
         assert_equal 7, timeseries.dataset.all.size
+        timeseries = Timeseries.new(from: yesterday, to: today.end_of_day, tick: "15 minutes", query: "SELECT * FROM bitcoin_prices")
+        assert_equal 8, timeseries.dataset.all.size
       end
 
-      it "should return one row per currency per unit of time" do
-        assert_equal 6, per_minute.all.size
-        assert_equal 2, per_day.all.size
+      it "should rank multiple prices within the same tick" do
+        timeseries = Timeseries.new(from: today, to: today.end_of_day, tick: "15 minutes", query: "SELECT * FROM bitcoin_prices")
+        a, a2, b, c = timeseries.dataset.to_hash_groups(:currency)["USD"]
+        assert_equal [1, 2], [a[:rank], a2[:rank]]
+        assert_equal 1, b[:rank]
+        assert_equal 1, c[:rank]
       end
 
       it "should return the exact tick from series" do
@@ -177,36 +180,6 @@ describe Timeseries do
           today + 15.minutes,
           today + 30.minutes
         ], per_minute.all.map { |row| row[:tick] }.uniq
-      end
-
-      it "should provide lowest price per currency per unit of time" do
-        usd_per_minute = per_minute.to_hash_groups(:currency)["USD"]
-        assert_equal 0.9.to_d, usd_per_minute.first[:low]
-
-        usd_per_day = per_day.to_hash_groups(:currency)["USD"]
-        assert_equal 0.5.to_d, usd_per_day.first[:low]
-
-        eur_per_day = per_day.to_hash_groups(:currency)["EUR"]
-        assert_equal 1.2.to_d, eur_per_day.first[:low]
-      end
-
-      it "should provide highest price per currency per unit of time" do
-        usd_per_minute = per_minute.to_hash_groups(:currency)["USD"]
-        assert_equal 1.0.to_d, usd_per_minute.first[:high]
-
-        usd_per_day = per_day.to_hash_groups(:currency)["USD"]
-        assert_equal 2.0.to_d, usd_per_day.first[:high]
-
-        eur_per_day = per_day.to_hash_groups(:currency)["EUR"]
-        assert_equal 2.4.to_d, eur_per_day.first[:high]
-      end
-
-      it "should provide open price per currency per unit of time" do
-        usd_per_day = per_day.to_hash_groups(:currency)["USD"]
-        assert_equal 1.0.to_d, usd_per_day.first[:open]
-
-        eur_per_day = per_day.to_hash_groups(:currency)["EUR"]
-        assert_equal 1.2.to_d, eur_per_day.first[:open]
       end
 
       it "should provide close price per currency per unit of time" do
@@ -235,12 +208,12 @@ describe Timeseries do
 
       it "should populate a running weights table per country per tick" do
         assert_equal [
-          {tick: today,              country: "de", weight: 0.5.to_d},
-          {tick: today + 15.minutes, country: "de", weight: 0.5.to_d},
-          {tick: today + 30.minutes, country: "de", weight: 0.7.to_d},
           {tick: today,              country: "us", weight: 0.9.to_d},
+          {tick: today,              country: "de", weight: 0.5.to_d},
           {tick: today + 15.minutes, country: "us", weight: 0.8.to_d},
-          {tick: today + 30.minutes, country: "us", weight: 0.8.to_d}
+          {tick: today + 15.minutes, country: "de", weight: 0.5.to_d},
+          {tick: today + 30.minutes, country: "us", weight: 0.8.to_d},
+          {tick: today + 30.minutes, country: "de", weight: 0.7.to_d}
         ], weights_per_tick
       end
     end

@@ -15,7 +15,8 @@ module Bitcoinppi
         weights.tick = series.tick
       LEFT OUTER JOIN bitcoin_prices ON
         bitcoin_prices.currency = bigmac_prices.currency AND
-        bitcoin_prices.tick = series.tick
+        bitcoin_prices.tick = series.tick AND
+        bitcoin_prices.rank = 1
       GROUP BY series.tick
       ORDER BY series.tick
     SQL
@@ -43,7 +44,8 @@ module Bitcoinppi
         weights.tick = series.tick
       JOIN bitcoin_prices ON
         bitcoin_prices.currency = bigmac_prices.currency AND
-        bitcoin_prices.tick = series.tick
+        bitcoin_prices.tick = series.tick AND
+        bitcoin_prices.rank = 1
       GROUP BY series.tick
       ORDER BY series.tick DESC
       LIMIT 1
@@ -66,7 +68,8 @@ module Bitcoinppi
           weights.tick = series.tick
         JOIN bitcoin_prices ON
           bitcoin_prices.currency = bigmac_prices.currency AND
-          bitcoin_prices.tick = series.tick
+          bitcoin_prices.tick = series.tick AND
+          bitcoin_prices.rank = 1
       ) AS inr
     SQL
     timeseries.dataset.single_value
@@ -100,7 +103,8 @@ module Bitcoinppi
           rank() OVER w AS rank
         FROM series
         LEFT OUTER JOIN bitcoin_prices ON
-          bitcoin_prices.tick = series.tick
+          bitcoin_prices.tick = series.tick AND
+          bitcoin_prices.rank = 1
         LEFT OUTER JOIN bigmac_prices ON
           bigmac_prices.currency = bitcoin_prices.currency AND
           bitcoin_prices.time >= bigmac_prices.time AND bitcoin_prices.time < bigmac_prices.time_end
