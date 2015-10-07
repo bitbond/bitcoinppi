@@ -132,9 +132,11 @@ This endpoint returns both data from `/v1/spot` and `/v1/countries` combined.
 
 * Setup your database credentials:
 
-        $ echo 'user:password' > config/.database_credentials # user with password
+        $ echo 'user:password' > config/.database_credentials # user with password or
         $ echo 'user:' > config/.database_credentials         # passwordless-user
         $ chmod 600 config/.database_credentials
+
+_Note: Some configurations require the database user to have a password._
 
 * Run tests:
 
@@ -158,4 +160,14 @@ This endpoint returns both data from `/v1/spot` and `/v1/countries` combined.
 * Load historical data for `bitcoin_prices` table
 
         $ ruby sources/historical_bitcoinaverage.rb
+        $ ruby sources/historical_quandl.rb
 
+* Load data for `weights` table
+
+        $ ruby sources/weights.rb
+
+## Keep data updated
+
+* Make sure you have all prerequisites installed (see Development)
+
+* Install crontab using `$ whenever --update-crontab` (you can read the resulting crontab using `$ whenever`)
