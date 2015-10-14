@@ -2,9 +2,18 @@ require_relative "./boot.rb"
 require "sinatra"
 require "sinatra/content_for"
 require "sinatra/json"
-require "securerandom"
+
+helpers do
+  def handle_versioning
+    return unless requested_version = request.path =~ %r{\A/v(\d+\.\d+)} && $1
+    unless Config["versions"].include?(requested_version)
+      halt 400, { error: "Unsupported version: #{requested_version}", available_versions: Config["versions"] }.to_json
+    end
+  end
+end
 
 before do
+  handle_versioning
   cache_control :public, max_age: 15.minutes unless params[:bypass_caches]
 end
 
@@ -16,15 +25,19 @@ get "/" do
   erb :landingpage
 end
 
-get "/v1/spot", provides: "json" do
-  json Bitcoinppi.spot
-end
-
-get "/v1/spot_by_country", provides: "json" do
-  json countries: Bitcoinppi.spot_countries
-end
-
-get "/v1/spot_full", provides: "json" do
+get "/v:version/spot", provides: "json" do
   json spot: Bitcoinppi.spot, countries: Bitcoinppi.spot_countries
+end
+
+get "/v:version/global_ppi", provides: "json" do
+  json global_ppi: Bitcoinppi.global_ppi(params).all
+end
+
+get "/v:version/countries", provides: "json" do
+  json countries: Bitcoinppi.countries(params)
+end
+
+get "/v:version/countries/:country", provides: "json" do |country|
+  json country => Bitcoinppi.countries(params).where(country: country)
 end
 

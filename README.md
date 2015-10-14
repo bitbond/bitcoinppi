@@ -1,78 +1,35 @@
 # bitcoinppi
 
-bitcoin purchasing power index (bitcoinppi) source code.
+bitcoin purchasing power index (bitcoinppi).
 
 ## API
 
-**Beware: The API is currently under development.**
-
-There are 3 public endpoints that return JSON data from this site.
+There are multiple public endpoints that return JSON data from this site.
 In general the data is updated every 15 minutes. Caching rules are set to store responses up to 15 minutes.
 
-### `GET /v1/spot`
+#### Versions
 
-This endpoint returns the latest known global ppi as within the last 24 hours.
-In addition to that it also returns the average global ppi as within the last 24 hours.
+* `/v1.0` The initial release.
 
-**Response:**
+#### GET parameters
 
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    ETag: "b4fa0f27-372d-4505-bec7-f9c58526c850"
-    Cache-Control: public, max-age=900
-    Content-Length: 139
-    
-    
-    {
-      "tick": "2015-10-06T15:31:37.610+02:00",
-      "global_ppi": "25.2920943660613145",
-      "avg_global_ppi": "68.7298146228396595"
-    }
+All endpoints except for `spot` accept these parameters that let you define the timeframe and resolution.
 
-### `GET /v1/spot_by_country`
+All times are expected in UTC, and `to` is expected to be later than `from`. For calculting the resolution, the given times will be truncated to their unit of resolution (e.g. '2015-10-14 12:47' will become '2015-10-14 12:00' when using '1 hour').
 
-This endpoint returns the last known country ppi within the last 24 hours.
-Additionally it also returns more information per country.
+* `from`  
+    default: 1 year ago  
+    format: YYYY-mm-dd or YYYY-mm-dd HH:00
+* `to`  
+    default: now  
+    format: YYYY-mm-dd or YYYY-mm-dd HH:00
+* `tick`  
+    default: 1 day  
+    allowed: 7 days, 1 day, 12 hours, 6 hours, 1 hour, 30 minutes, 15 minutes
 
-**Response:**
+### `GET /v1.0/spot`
 
-
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    ETag: "1688f78c-67ee-439c-9167-21535144b40d"
-    Cache-Control: public, max-age=900
-    Content-Length: 7246
-    
-    
-    {
-      "countries": {
-        "Australia": {
-          "bigmac_price_close": "5.3",
-          "bitcoin_price_close": "349.09",
-          "country": "Australia",
-          "currency": "AUD",
-          "tick": "2015-10-06T15:06:28.230+02:00",
-          "weight": "1.0",
-          "avg_country_ppi": "65.8660377358490566",
-          "country_ppi": "65.8660377358490566"
-        },
-        ...
-        "United States": {
-          "bigmac_price_close": "10.0",
-          "bitcoin_price_close": "244.87",
-          "country": "United States",
-          "currency": "USD",
-          "tick": "2015-10-06T15:06:28.230+02:00",
-          "weight": "1.0",
-          "avg_country_ppi": "24.487",
-          "country_ppi": "24.487"
-        }
-      }
-    }
-
-### `GET /v1/spot_full`
-
-This endpoint returns both data from `/v1/spot` and `/v1/spot_by_country` combined.
+This endpoint returns data within the last 24 hours. **GET parameters** are ignored.
 
 **Response:**
 
@@ -115,6 +72,18 @@ This endpoint returns both data from `/v1/spot` and `/v1/spot_by_country` combin
       }
     }
 
+### `GET /v1.0/global_ppi`
+
+This endpoint returns all global_ppi values over a defined time series. The timeframe can be adjusted using the **GET parameters** declared above.
+
+### `GET /v1.0/countries`
+
+This endpoint returns all ppi values over all countries, over a defined time series. The timeframe can be adjusted using the **GET parameters** declared above.
+
+### `GET /v1.0/countries/:country`
+
+This endpoint returns all ppi values by country, over a defined time series. The timeframe can be adjusted using the **GET parameters** declared above.
+
 ## Development
 
 * Make sure you have matching Ruby version according to `.ruby-version`
@@ -139,7 +108,7 @@ _Note: Some configurations require the database user to have a password._
 
 * Run tests:
 
-        $ ruby test/run.rb
+        $ rake
 
 * Run application:
 
@@ -154,16 +123,11 @@ _Note: Some configurations require the database user to have a password._
 * Make sure you have all prerequisites installed (see Development)
 * Load data for `bigmac_prices` table
 
-        $ ruby sources/bigmac_prices.rb
+        $ rake sources:bigmac_prices && rake refresh
 
-* Load historical data for `bitcoin_prices` table
+* Load all historical data:
 
-        $ ruby sources/historical_bitcoinaverage.rb
-        $ ruby sources/historical_quandl.rb
-
-* Load data for `weights` table
-
-        $ ruby sources/weights.rb
+        $ rake update_historical
 
 ## Keep data updated
 
