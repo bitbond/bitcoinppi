@@ -12,7 +12,7 @@ get "/" do
   dataset = Bitcoinppi.global_ppi(params)
   @data_table = DataTable.new(dataset)
   @data_table.set_column(:tick, label: "Time", type: "date") { |tick| "Date(%s, %s, %s)" % [tick.year, tick.month - 1, tick.day] }
-  @data_table.set_column(:weighted_global_ppi, label: "weighted global ppi", type: "number") { |ppi| ppi ? ppi.to_f.to_s : nil }
+  @data_table.set_column(:global_ppi, label: "global ppi", type: "number") { |ppi| ppi ? ppi.to_f.to_s : nil }
   erb :landingpage
 end
 
