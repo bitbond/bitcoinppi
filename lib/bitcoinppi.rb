@@ -23,11 +23,10 @@ module Bitcoinppi
   def spot
     now = DateTime.now
     timeframe = {from: now - 24.hours, to: now, tick: "15 minutes"}
+    dataset = global_ppi(timeframe)
     closing = global_ppi(timeframe).last
-    average_dataset = Bitcoinppi.within_timeseries(Timeseries.new(timeframe))
-      .select{ avg(global_ppi).as(:avg_global_ppi) }
-      .where(rank: 1)
-    closing.merge(avg_global_ppi: average_dataset.single_value)
+    avg_global_ppi = dataset.from_self.select { avg(global_ppi) }.single_value
+    closing.merge(avg_global_ppi: avg_global_ppi)
   end
 
   def spot_countries

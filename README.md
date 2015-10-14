@@ -24,12 +24,12 @@ In addition to that it also returns the average global ppi as within the last 24
     
     
     {
-      "timestamp": "2015-10-06T15:31:37.610+02:00",
-      "weighted_global_ppi": "1925.2920943660613145",
-      "weighted_avg_global_ppi": "68.7298146228396595"
+      "tick": "2015-10-06T15:31:37.610+02:00",
+      "global_ppi": "25.2920943660613145",
+      "avg_global_ppi": "68.7298146228396595"
     }
 
-### `GET /v1/countries`
+### `GET /v1/spot_by_country`
 
 This endpoint returns the last known country ppi within the last 24 hours.
 Additionally it also returns more information per country.
@@ -45,7 +45,6 @@ Additionally it also returns more information per country.
     
     
     {
-      "timestamp": "2015-10-06T15:21:28.230+02:00",
       "countries": {
         "Australia": {
           "bigmac_price_close": "5.3",
@@ -54,8 +53,8 @@ Additionally it also returns more information per country.
           "currency": "AUD",
           "tick": "2015-10-06T15:06:28.230+02:00",
           "weight": "1.0",
-          "weighted_avg_country_ppi": "65.8660377358490566",
-          "weighted_country_ppi": "65.8660377358490566"
+          "avg_country_ppi": "65.8660377358490566",
+          "country_ppi": "65.8660377358490566"
         },
         ...
         "United States": {
@@ -65,15 +64,15 @@ Additionally it also returns more information per country.
           "currency": "USD",
           "tick": "2015-10-06T15:06:28.230+02:00",
           "weight": "1.0",
-          "weighted_avg_country_ppi": "24.487",
-          "weighted_country_ppi": "24.487"
+          "avg_country_ppi": "24.487",
+          "country_ppi": "24.487"
         }
       }
     }
 
-### `GET /v1/full`
+### `GET /v1/spot_full`
 
-This endpoint returns both data from `/v1/spot` and `/v1/countries` combined.
+This endpoint returns both data from `/v1/spot` and `/v1/spot_by_country` combined.
 
 **Response:**
 
@@ -87,9 +86,9 @@ This endpoint returns both data from `/v1/spot` and `/v1/countries` combined.
     
     {
       "spot": {
-        "timestamp": "2015-10-06T15:42:09.140+02:00",
-        "weighted_avg_global_ppi": "68.7226854718793516",
-        "weighted_global_ppi": "1925.5837868120114838"
+        "tick": "2015-10-06T15:42:09.140+02:00",
+        "avg_global_ppi": "68.7226854718793516",
+        "global_ppi": "25.5837868120114838"
       },
       "countries" {
         "Australia": {
@@ -99,8 +98,8 @@ This endpoint returns both data from `/v1/spot` and `/v1/countries` combined.
             "currency": "AUD",
             "tick": "2015-10-06T15:27:09.172+02:00",
             "weight": "1.0",
-            "weighted_avg_country_ppi": "65.8591194968553459",
-            "weighted_country_ppi": "65.839622641509434"
+            "avg_country_ppi": "65.8591194968553459",
+            "country_ppi": "65.839622641509434"
         },
         ...
         "United States": {
@@ -110,8 +109,8 @@ This endpoint returns both data from `/v1/spot` and `/v1/countries` combined.
             "currency": "USD",
             "tick": "2015-10-06T15:27:09.172+02:00",
             "weight": "1.0",
-            "weighted_avg_country_ppi": "24.4983333333333333",
-            "weighted_country_ppi": "24.522"
+            "avg_country_ppi": "24.4983333333333333",
+            "country_ppi": "24.522"
         }
       }
     }
