@@ -14,7 +14,6 @@ See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/
 
     HTTP/1.1 200 OK
     Content-Type: application/json
-    ETag: "10f84476-7927-475d-a996-0621c28b9a9c"
     Cache-Control: public, max-age=900
     Content-Length: 7292
     
