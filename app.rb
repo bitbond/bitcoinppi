@@ -37,7 +37,7 @@ get "/v:version/countries", provides: "json" do
   json countries: Bitcoinppi.countries(params)
 end
 
-get "/v:version/countries/:country", provides: "json" do |country|
+get "/v:version/countries/:country", provides: "json" do |_version, country|
   json country => Bitcoinppi.countries(params).where(country: country)
 end
 
