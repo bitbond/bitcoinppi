@@ -4,7 +4,51 @@ bitcoin purchasing power index (bitcoinppi).
 
 ## API
 
-See .
+See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/content/api.md) for more.
+
+**Example:**
+
+    GET /v1.0/spot
+
+**Response:**
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    ETag: "10f84476-7927-475d-a996-0621c28b9a9c"
+    Cache-Control: public, max-age=900
+    Content-Length: 7292
+    
+    
+    {
+      "spot": {
+        "tick": "2015-10-06T15:42:09.140+02:00",
+        "avg_global_ppi": "68.7226854718793516",
+        "global_ppi": "25.5837868120114838"
+      },
+      "countries" {
+        "Australia": {
+            "bigmac_price_close": "5.3",
+            "bitcoin_price_close": "348.95",
+            "country": "Australia",
+            "currency": "AUD",
+            "tick": "2015-10-06T15:27:09.172+02:00",
+            "weight": "1.0",
+            "avg_country_ppi": "65.8591194968553459",
+            "country_ppi": "65.839622641509434"
+        },
+        ...
+        "United States": {
+            "bigmac_price_close": "10.0",
+            "bitcoin_price_close": "245.22",
+            "country": "United States",
+            "currency": "USD",
+            "tick": "2015-10-06T15:27:09.172+02:00",
+            "weight": "1.0",
+            "avg_country_ppi": "24.4983333333333333",
+            "country_ppi": "24.522"
+        }
+      }
+    }
 
 ## Development
 
