@@ -100,4 +100,7 @@ _Note: Some configurations require the database user to have a password._
 
 ## License
 
-See [`LICENSE`](https://github.com/bitbond/bitcoinppi/blob/master/LICENSE) for more.
+The MIT License (MIT), Copyright (c) 2015 Bitbond GmbH
+
+See [`LICENSE`](https://github.com/bitbond/bitcoinppi/blob/master/LICENSE).
+
