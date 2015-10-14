@@ -1,0 +1,39 @@
+-- bitcoinppi.psql as used in Bitcoinppi class and for bitcoinppi materialized view
+WITH
+bigmac_prices AS (
+  SELECT
+    *,
+    lag(time, 1, 'infinity'::timestamptz) OVER (
+      PARTITION BY country
+      ORDER BY time DESC
+    ) AS time_end
+  FROM bigmac_prices
+),
+weights AS (
+  SELECT
+    *,
+    lag(time, 1, 'infinity'::timestamptz) OVER (
+      PARTITION BY country
+      ORDER BY time DESC
+    ) AS time_end
+  FROM weights
+)
+SELECT
+  bitcoin_prices.time AS time,
+  bigmac_prices.country AS country,
+  bitcoin_prices.currency AS currency,
+  bitcoin_prices.price AS bitcoin_price,
+  bigmac_prices.price AS bigmac_price,
+  weights.weight AS weight,
+  bitcoin_prices.price / bigmac_prices.price AS local_ppi,
+  bitcoin_prices.price / bigmac_prices.price * COALESCE(weights.weight, 1) AS global_ppi
+FROM bitcoin_prices
+JOIN bigmac_prices ON
+  bigmac_prices.currency = bitcoin_prices.currency AND
+  bitcoin_prices.time >= bigmac_prices.time AND
+  bitcoin_prices.time < bigmac_prices.time_end
+LEFT OUTER JOIN weights ON
+  weights.country = bigmac_prices.country AND
+  bitcoin_prices.time >= weights.time AND
+  bitcoin_prices.time < weights.time_end
+

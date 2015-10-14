@@ -9,7 +9,7 @@ before do
 end
 
 get "/" do
-  dataset = Bitcoinppi.historical_global_ppi
+  dataset = Bitcoinppi.global_ppi(params)
   @data_table = DataTable.new(dataset)
   @data_table.set_column(:tick, label: "Time", type: "date") { |tick| "Date(%s, %s, %s)" % [tick.year, tick.month - 1, tick.day] }
   @data_table.set_column(:weighted_global_ppi, label: "weighted global ppi", type: "number") { |ppi| ppi ? ppi.to_f.to_s : nil }
@@ -20,11 +20,11 @@ get "/v1/spot", provides: "json" do
   json Bitcoinppi.spot
 end
 
-get "/v1/countries", provides: "json" do
-  json timestamp: DateTime.now, countries: Bitcoinppi.weighted_countries
+get "/v1/spot_by_country", provides: "json" do
+  json countries: Bitcoinppi.spot_countries
 end
 
-get "/v1/full", provides: "json" do
-  json spot: Bitcoinppi.spot, countries: Bitcoinppi.weighted_countries
+get "/v1/spot_full", provides: "json" do
+  json spot: Bitcoinppi.spot, countries: Bitcoinppi.spot_countries
 end
 

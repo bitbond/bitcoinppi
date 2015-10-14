@@ -3,7 +3,7 @@ require_relative "../test_helper.rb"
 
 # bitcoinppi calculation
 #
-# time      | country | currency | bitcoin_price | bigmac_price | local_ppi                      | weight    | weighted_ppi
+# time      | country | currency | bitcoin_price | bigmac_price | local_ppi                      | weight    | global_ppi
 #           |         |          |               |              | = bitcoin_price / bigmac_price |           | = bitcoin_price / bigmac_price * weight
 # past      | US      | USD      | 120.00        | 10.00        | 12.0                           | 0.8       |  9.6
 # past      | DE      | EUR      | 210.00        | 20.00        | 10.5                           | 0.2       |  2.1
@@ -63,26 +63,51 @@ describe Bitcoinppi do
     )
   end
 
-  describe "::weighted_global_ppi" do
-    it "should return the closing weighted global ppi over the last 24 hours" do
-      assert_equal 9.6.to_d, Bitcoinppi.weighted_global_ppi(today)
+  describe "::spot" do
+    let(:spot) { Bitcoinppi.spot }
+    before { Timecop.freeze(today) }
+    after { Timecop.return }
+
+    it "should return the corresponding tick as timestamp" do
+      assert_equal today, spot[:timestamp]
+    end
+
+    it "should return the global ppi" do
+      assert_equal 9.6.to_d, spot[:global_ppi]
+    end
+
+    it "should return the average global ppi over the last 24 hours" do
+      assert_equal 5.127.to_d, spot[:avg_global_ppi]
     end
   end
 
-  describe "::weighted_avg_global_ppi" do
-    it "should return the average weighted global ppi over the last 24 hours" do
-      assert_equal 5.127.to_d, Bitcoinppi.weighted_avg_global_ppi(today)
-    end
-  end
+  describe "::spot_countries" do
+    let(:spot_countries) { Bitcoinppi.spot_countries }
+    before { Timecop.freeze(today) }
+    after { Timecop.return }
 
-  describe "::weighted_countries" do
-    it "should return the closing weighted global ppi per country" do
-      countries = Bitcoinppi.weighted_countries(today)
-      us, de = countries["United States"], countries["Germany"]
-      assert_equal 8.to_d, us[:weighted_country_ppi]
-      assert_equal 8.4.to_d, us[:weighted_avg_country_ppi]
-      assert_equal 1.6.to_d, de[:weighted_country_ppi]
-      assert_equal 1.854.to_d, de[:weighted_avg_country_ppi]
+    it "should return the closing global ppi per country" do
+      us, de = spot_countries["United States"], spot_countries["Germany"]
+      assert_equal 8.to_d, us[:global_ppi]
+      assert_equal 1.6.to_d, de[:global_ppi]
+    end
+
+    it "should return the closing local ppi per country" do
+      us, de = spot_countries["United States"], spot_countries["Germany"]
+      assert_equal 10.to_d, us[:local_ppi]
+      assert_equal 8.to_d, de[:local_ppi]
+    end
+
+    it "should return the average local ppi per country" do
+      us, de = spot_countries["United States"], spot_countries["Germany"]
+      assert_equal 10.5.to_d, us[:avg_local_ppi]
+      assert_equal 9.27.to_d, de[:avg_local_ppi]
+    end
+
+    it "should return the average global ppi per country" do
+      us, de = spot_countries["United States"], spot_countries["Germany"]
+      assert_equal 8.4.to_d, us[:avg_global_ppi]
+      assert_equal 1.854.to_d, de[:avg_global_ppi]
     end
   end
 

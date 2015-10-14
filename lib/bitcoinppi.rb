@@ -1,129 +1,69 @@
-require "pp"
-
 module Bitcoinppi
 
-  def historical_global_ppi(now = DateTime.now)
-    timeseries = Timeseries.new(from: now - 1.year, to: now, tick: "1 day", query: <<-SQL)
-      SELECT
-        series.tick AS tick,
-        SUM(bitcoin_prices.close / bigmac_prices.price * COALESCE(weights.weight, 1)) AS weighted_global_ppi
-      FROM series
-      LEFT OUTER JOIN bigmac_prices ON
-        series.tick >= bigmac_prices.time AND series.tick < bigmac_prices.time_end
-      LEFT OUTER JOIN weights ON
-        weights.country = bigmac_prices.country AND
-        weights.tick = series.tick
-      LEFT OUTER JOIN bitcoin_prices ON
-        bitcoin_prices.currency = bigmac_prices.currency AND
-        bitcoin_prices.tick = series.tick AND
-        bitcoin_prices.rank = 1
-      GROUP BY series.tick
-      ORDER BY series.tick
-    SQL
-    timeseries.dataset
+  def refresh
+    DB.refresh_view(:bitcoinppi)
+  end
+
+  def within_timeseries(timeseries)
+    dataset = DB[:bitcoinppi]
+      .with(:series, timeseries.dataset)
+      .with(
+        :bitcoinppi,
+        DB[:bitcoinppi]
+          .select_all(:bitcoinppi)
+          .select_append { rank.function.over(partition: [:country, :series__tick], order: Sequel.desc(:time)).as(:rank) }
+          .select_append { series__tick.as(:tick) }
+          .join(:series) do |series, bitcoinppi|
+            (Sequel.qualify(bitcoinppi, :time) >= Sequel.qualify(series, :tick)) &
+            (Sequel.qualify(bitcoinppi, :time) < Sequel.qualify(series, :tick_end))
+          end
+      )
   end
 
   def spot
     now = DateTime.now
-    {
-      timestamp: now,
-      weighted_global_ppi: weighted_global_ppi(now),
-      weighted_avg_global_ppi: weighted_avg_global_ppi(now)
-    }
+    timeseries = Timeseries.new(from: now - 24.hours, to: now, tick: "15 minutes")
+    dataset = Bitcoinppi.within_timeseries(timeseries)
+      .select{[
+        bitcoinppi__tick.as(:tick),
+        sum(global_ppi).as(:global_ppi)
+      ]}
+      .where(rank: 1)
+      .group_by(:tick)
+      .order(:tick)
+    data = dataset.last
+    average_dataset = Bitcoinppi.within_timeseries(timeseries)
+      .select{ avg(global_ppi).as(:avg_global_ppi) }
+      .where(rank: 1)
+    data.merge(avg_global_ppi: average_dataset.single_value)
   end
 
-  def weighted_global_ppi(now = DateTime.now)
-    timeseries = Timeseries.new(from: now - 24.hours, to: now, tick: "15 minutes", query: <<-SQL)
-      SELECT
-        SUM(bitcoin_prices.close / bigmac_prices.price * COALESCE(weights.weight, 1)) AS weighted_global_ppi
-      FROM series
-      LEFT OUTER JOIN bigmac_prices ON
-        series.tick >= bigmac_prices.time AND series.tick < bigmac_prices.time_end
-      LEFT OUTER JOIN weights ON
-        weights.country = bigmac_prices.country AND
-        weights.tick = series.tick
-      JOIN bitcoin_prices ON
-        bitcoin_prices.currency = bigmac_prices.currency AND
-        bitcoin_prices.tick = series.tick AND
-        bitcoin_prices.rank = 1
-      GROUP BY series.tick
-      ORDER BY series.tick DESC
-      LIMIT 1
-    SQL
-    timeseries.dataset.single_value
-  end
-
-  def weighted_avg_global_ppi(now = DateTime.now)
-    timeseries = Timeseries.new(from: now - 24.hours, to: now, tick: "15 minutes", query: <<-SQL)
-      SELECT
-        AVG(weighted_global_ppi)
-      FROM (
-        SELECT
-          bitcoin_prices.close / bigmac_prices.price * COALESCE(weights.weight, 1) AS weighted_global_ppi
-        FROM series
-        LEFT OUTER JOIN bigmac_prices ON
-          series.tick >= bigmac_prices.time AND series.tick < bigmac_prices.time_end
-        LEFT OUTER JOIN weights ON
-          weights.country = bigmac_prices.country AND
-          weights.tick = series.tick
-        JOIN bitcoin_prices ON
-          bitcoin_prices.currency = bigmac_prices.currency AND
-          bitcoin_prices.tick = series.tick AND
-          bitcoin_prices.rank = 1
-      ) AS inr
-    SQL
-    timeseries.dataset.single_value
-  end
-
-  def weighted_countries(now = DateTime.now)
-    timeseries = Timeseries.new(from: now - 24.hours, to: now, tick: "15 minutes", query: <<-SQL)
-      SELECT
-        tick,
-        country,
-        currency,
-        bitcoin_price_close,
-        bigmac_price_close,
-        weight,
-        local_country_ppi,
-        local_avg_country_ppi,
-        weighted_country_ppi,
-        weighted_avg_country_ppi
-      FROM (
-        SELECT
-          series.tick AS tick,
-          bigmac_prices.country AS country,
-          bitcoin_prices.currency AS currency,
-          bitcoin_prices.close AS bitcoin_price_close,
-          bigmac_prices.price AS bigmac_price_close,
-          COALESCE(weights.weight, 1) AS weight,
-          bitcoin_prices.close / bigmac_prices.price AS local_country_ppi,
-          avg(bitcoin_prices.close / bigmac_prices.price) OVER w AS local_avg_country_ppi,
-          bitcoin_prices.close / bigmac_prices.price * COALESCE(weights.weight, 1) AS weighted_country_ppi,
-          avg(bitcoin_prices.close / bigmac_prices.price * COALESCE(weights.weight, 1)) OVER w AS weighted_avg_country_ppi,
-          rank() OVER w AS rank
-        FROM series
-        LEFT OUTER JOIN bitcoin_prices ON
-          bitcoin_prices.tick = series.tick AND
-          bitcoin_prices.rank = 1
-        LEFT OUTER JOIN bigmac_prices ON
-          bigmac_prices.currency = bitcoin_prices.currency AND
-          bitcoin_prices.time >= bigmac_prices.time AND bitcoin_prices.time < bigmac_prices.time_end
-        LEFT OUTER JOIN weights ON
-          weights.country = bigmac_prices.country AND
-          weights.tick = series.tick
-        WHERE bigmac_prices.country IS NOT NULL
-        WINDOW w AS (
-          PARTITION BY bigmac_prices.country
-          ORDER BY series.tick DESC
-          RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-        )
-        ORDER BY bigmac_prices.country, series.tick
-      ) AS inr
-      WHERE rank = 1
-    SQL
-    hash_groups = timeseries.dataset.to_hash_groups(:country)
+  def spot_countries
+    now = DateTime.now
+    hash_groups = countries(from: now - 24.hours, to: now, tick: "15 minutes").to_hash_groups(:country)
     hash_groups.each { |country, data| hash_groups[country] = data.first }
     hash_groups
+  end
+
+  def countries(params)
+    timeseries = Timeseries.new(params)
+    dataset = Bitcoinppi.within_timeseries(timeseries)
+      .select_all(:bitcoinppi)
+      .select_append { avg(:global_ppi).over(partition: :country, order: Sequel.desc(:bitcoinppi__time), frame: :all).as(:avg_global_ppi) }
+      .select_append { avg(:local_ppi).over(partition: :country, order: Sequel.desc(:bitcoinppi__time), frame: :all).as(:avg_local_ppi) }
+      .where(rank: 1)
+      .order(Sequel.desc(:time))
+  end
+
+  def global_ppi(params)
+    timeseries = Timeseries.new(params)
+    dataset = Bitcoinppi.within_timeseries(timeseries)
+      .select{[
+        bitcoinppi__tick.as(:tick),
+        sum(global_ppi).as(:global_ppi)
+      ]}
+      .where(rank: 1)
+      .group_by(:bitcoinppi__tick)
   end
 
   extend self

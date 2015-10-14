@@ -4,6 +4,7 @@ require "rack/test"
 require "mocha/mini_test"
 require "database_cleaner"
 require "timecop"
+require "byebug"
 
 require_relative "../boot.rb"
 
@@ -23,6 +24,7 @@ class MiniTest::Spec
     data.each do |table, data|
       DB[table].import(data.shift, data)
     end
+    Bitcoinppi.refresh
   end
 
   def assert_starts_with(value, object)

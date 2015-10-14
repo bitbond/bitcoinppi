@@ -6,218 +6,131 @@ describe Timeseries do
   let(:timeseries) { Timeseries.new(query: "SELECT 1") }
 
   describe "::new" do
-    it "should default :from to the beginning of last year" do
-      assert_equal 1.year.ago.beginning_of_year, timeseries.from
+    it "should default :from to one year ago" do
+      Timecop.freeze do
+        assert_equal DateTime.now - 1.year, Timeseries.new.from
+      end
     end
 
-    it "should default :to to the current time" do
+    it "should parse :from" do
       Timecop.freeze do
-        assert_equal DateTime.now, timeseries.to
+        assert_equal DateTime.parse("2015-05-21 UTC"), Timeseries.new(from: "2015-05-21").from
+      end
+    end
+
+    it "should default :to to now" do
+      Timecop.freeze do
+        assert_equal DateTime.now, Timeseries.new.to
+      end
+    end
+
+    it "should parse :to" do
+      Timecop.freeze do
+        assert_equal DateTime.parse("2015-05-21 UTC"), Timeseries.new(to: "2015-05-21").to
       end
     end
 
     it "should default :tick to 1 day" do
-      assert_equal "1 day", timeseries.tick
+      assert_equal "1 day", Timeseries.new.tick
     end
 
-    it "should ensure :tick is within VALID_TICKS" do
-      Timeseries::VALID_TICKS.each do |tick|
-        assert_equal tick, Timeseries.new(tick: tick, query: "SELECT 1").tick
+    it "should allow custom ticks within a given interval" do
+      now = DateTime.now
+      [
+        3.years,
+        1.year,
+        7.months,
+        6.months,
+        3.months,
+        1.month,
+        1.week,
+        5.days,
+        3.days,
+        1.day
+      ].each do |interval|
+        ticks = Timeseries.valid_ticks(interval)
+        ticks.each do |tick|
+          timeframe = Timeseries.new(from: now - interval, to: now, tick: tick)
+          assert_equal tick, timeframe.tick
+        end
       end
-      assert_raises(ArgumentError) { Timeseries.new(tick: "10 days", query: "SELECT 1") }
-      assert_raises(ArgumentError) { Timeseries.new(tick: "foo", query: "SELECT 1") }
+    end
+
+    it "should raise Timeseries::Invalid on ticks other than allowed within the given interval" do
+      assert_raises(Timeseries::Invalid) { Timeseries.new(from: "2011-07-01", to: DateTime.now, tick: "15 minutes") }
+      assert_raises(Timeseries::Invalid) { Timeseries.new(tick: "foogarbl") }
+      assert_raises(Timeseries::Invalid) { Timeseries.new(tick: "3 days") }
+    end
+
+    it "should raise Timeseries::Invalid on date older than 2011-07-01" do
+      assert_raises(Timeseries::Invalid) { Timeseries.new(from: "2011-06-30") }
+    end
+
+    it "should raise Timeseries::Invalid on times younger than now" do
+      assert_raises(Timeseries::Invalid) { Timeseries.new(to: 1.day.from_now) }
+    end
+
+    it "should raise Timeseries::Invalid on a negative interval" do
+      now = DateTime.now
+      assert_raises(Timeseries::Invalid) { Timeseries.new(from: now, to: now - 1.day) }
     end
   end
 
-  describe "#date_trunc" do
-    it "should return the unit of time the tick was given" do
-      timeseries = Timeseries.new(tick: "1 day", query: "SELECT 1")
-      assert_equal "day", timeseries.date_trunc
+  describe "::parse" do
+    it "should try to parse a given time formatted like YYYY-mm-dd" do
+      assert_equal DateTime.parse("2015-05-21"), Timeseries.parse("2015-05-21")
     end
 
-    it "should singularize the unit of time the tick was given" do
-      timeseries = Timeseries.new(tick: "15 minutes", query: "SELECT 1")
-      assert_equal "minute", timeseries.date_trunc
+    it "should try to parse a given time formatted like YYYY-mm-dd HH:MM" do
+      assert_equal DateTime.parse("2015-05-21 21:45"), Timeseries.parse("2015-05-21 21:45")
+    end
+
+    it "should raise Timeseries::Invalid on invalid formatted times" do
+      assert_raises(Timeseries::Invalid) { Timeseries.parse("2015") }
+      assert_raises(Timeseries::Invalid) { Timeseries.parse("foogarbl") }
+      assert_raises(Timeseries::Invalid) { Timeseries.parse("01/05/2015") }
+      assert_raises(Timeseries::Invalid) { Timeseries.parse("2015-01") }
+      assert_raises(Timeseries::Invalid) { Timeseries.parse("2015-18-05") }
+    end
+
+    it "should return time in utc" do
+      assert_equal DateTime.parse("2015-05-21 21:45 UTC"), Timeseries.parse("2015-05-21 21:45")
+    end
+  end
+
+  describe "#truncate_datetime" do
+    it "should truncate a given time to the unit of the given tick" do
+      timeseries = Timeseries.new(from: yesterday, to: today, tick: "1 hour")
+      assert_equal DateTime.parse("2015-05-21 21:00 UTC"), timeseries.truncate_datetime(DateTime.parse("2015-05-21 21:59:12 UTC"))
+
+      timeseries = Timeseries.new(from: today - 7.days, to: today, tick: "1 day")
+      assert_equal DateTime.parse("2015-05-21 00:00 UTC"), timeseries.truncate_datetime(DateTime.parse("2015-05-21 21:59:12 UTC"))
+    end
+
+    it "should truncate tick lower than 1 hour to the hour" do
+      timeseries = Timeseries.new(from: yesterday, to: today, tick: "15 minutes")
+      assert_equal DateTime.parse("2015-05-21 21:00 UTC"), timeseries.truncate_datetime(DateTime.parse("2015-05-21 21:59:12 UTC"))
     end
   end
 
   describe "#dataset" do
-    describe "subsitutions" do
-      let(:timeseries) do
-        Timeseries.new(from: yesterday, to: today, tick: "1 day",
-          query: "SELECT :from::timestamptz AS from, :to::timestamptz AS to, :tick AS tick, :date_trunc AS date_trunc"
-        )
-      end
-      let(:row) { timeseries.dataset.first }
+    let(:dataset) { Timeseries.new(from: today, to: today.end_of_day, tick: "1 hour").dataset }
 
-      it "should provide the query with :from" do
-        assert_equal yesterday, row[:from]
-      end
+    it "should return one entry per tick" do
+      assert_equal 24, dataset.count
+    end
 
-      it "should provide the query with :to" do
-        assert_equal today, row[:to]
-      end
-
-      it "should provide the query with :tick" do
-        assert_equal "1 day", row[:tick]
-      end
-
-      it "should provide the query with :date_trunc" do
-        assert_equal "day", row[:date_trunc]
+    it "should include tick column" do
+      0.upto(23) do |i|
+        assert_equal today + i.hours, dataset.all[i][:tick]
       end
     end
 
-    describe "series table" do
-      let(:timeseries) { Timeseries.new(from: today - 7.days, to: today, tick: "1 day", query: "SELECT * FROM series") }
-
-      it "should provide ticks within the given time range" do
-        ticks = timeseries.dataset.map { |row| row[:tick] }
-        assert_starts_with [today - 7.days, today - 6.days], ticks
-        assert_ends_with  [today - 1.day, today], ticks
-        assert_equal 8, ticks.size
-      end
-
-      it "should provide tick_end within the given time range" do
-        (tick, tick_end), _ = timeseries.dataset.map(&:values)
-        assert_equal today - 7.days, tick
-        assert_equal today - 6.days, tick_end
-      end
-
-      it "should allow ticks to be of varying size" do
-        timeseries = Timeseries.new(from: yesterday, to: today, tick: "15 minutes", query: "SELECT * FROM series")
-        ticks = timeseries.dataset.map { |row| row[:tick] }
-        assert_starts_with [yesterday, yesterday + 15.minutes, yesterday + 30.minutes], ticks
-        assert_ends_with  [today - 30.minutes, today - 15.minutes, today], ticks
+    it "should include tick_end column" do
+      1.upto(24) do |i|
+        assert_equal today + i.hour, dataset.all[i-1][:tick_end]
       end
     end
-
-    describe "bigmac_prices subquery" do
-      let(:timeseries) { Timeseries.new(query: "SELECT * FROM bigmac_prices") }
-
-      before do
-        import(
-          bigmac_prices: [
-            [:country, :currency, :time,             :price],
-            ["za",     "XXX",     today - 7.days,       100],
-            ["us",     "USD",     today,                 10],
-            ["us",     "USD",     yesterday,              5],
-            ["de",     "EUR",     yesterday - 3.days,     4],
-            ["de",     "EUR",     today,                  8]
-          ]
-        )
-      end
-
-      it "should provide all fields plus time_end" do
-        assert_equal %i[country time currency price time_end], timeseries.dataset.first.keys
-      end
-
-      it "should order by country and time descending" do
-        first, *_, second_to_last, last = timeseries.dataset.to_a
-
-        row = {country: "de", currency: "EUR", time: today, time_end: DateTime::Infinity.new, price: 8.to_d}
-        assert_equal row, first
-
-        row = {country: "us", currency: "USD", time: yesterday, time_end: today, price: 5.to_d}
-        assert_equal row, second_to_last
-
-        row = {country: "za", currency: "XXX", time: today - 7.days, time_end: DateTime::Infinity.new, price: 100.to_d}
-        assert_equal row, last
-      end
-
-      it "should provide a time_end as ranges between bigmac prices" do
-        countries = timeseries.dataset.to_hash_groups(:country)
-        us = countries["us"]
-        assert_equal yesterday..today,              us[1][:time]..us[1][:time_end]
-        assert_equal today..DateTime::Infinity.new, us[0][:time]..us[0][:time_end]
-        de = countries["de"]
-        assert_equal (yesterday - 3.days)..today,   de[1][:time]..de[1][:time_end]
-        assert_equal today..DateTime::Infinity.new, de[0][:time]..de[0][:time_end]
-      end
-    end
-
-    describe "bitcoin subquery" do
-      let(:per_minute) { Timeseries.new(tick: "15 minutes", query: "SELECT * FROM bitcoin_prices WHERE rank = 1").dataset }
-      let(:per_day) { Timeseries.new(tick: "1 day", query: "SELECT * FROM bitcoin_prices WHERE rank = 1").dataset }
-
-      before do
-        import(
-          bitcoin_prices: [
-            [:currency, :time,              :price],
-            ["USD",     today,                 1.0], # usd day open
-            ["USD",     today +  5.seconds,    0.9], # irrelevant to unit of time 'minute', thus not returned, but represents low for this minute
-            ["USD",     today + 16.minutes,    2.0], # usd day high
-            ["USD",     today + 31.minutes,    0.5], # usd day close, usd day low
-            ["EUR",     today,                 1.2], # eur day open, day low
-            ["EUR",     today + 17.minutes,    1.8],
-            ["EUR",     today + 33.minutes,    2.4]  # eur day close, day high
-          ]
-        )
-      end
-
-      it "should provide currency, time fields plus tick, close and rank" do
-        assert_equal %i[currency time tick close rank], per_day.first.keys
-      end
-
-      it "should scope results within the given timeframe" do
-        import(bitcoin_prices: [ [:currency, :time, :price], ["USD", yesterday, 5.0] ])
-        timeseries = Timeseries.new(from: today, to: today.end_of_day, tick: "15 minutes", query: "SELECT * FROM bitcoin_prices")
-        assert_equal 7, timeseries.dataset.all.size
-        timeseries = Timeseries.new(from: yesterday, to: today.end_of_day, tick: "15 minutes", query: "SELECT * FROM bitcoin_prices")
-        assert_equal 8, timeseries.dataset.all.size
-      end
-
-      it "should rank multiple prices within the same tick" do
-        timeseries = Timeseries.new(from: today, to: today.end_of_day, tick: "15 minutes", query: "SELECT * FROM bitcoin_prices")
-        a, a2, b, c = timeseries.dataset.to_hash_groups(:currency)["USD"]
-        assert_equal [1, 2], [a[:rank], a2[:rank]]
-        assert_equal 1, b[:rank]
-        assert_equal 1, c[:rank]
-      end
-
-      it "should return the exact tick from series" do
-        assert_equal [
-          today,
-          today + 15.minutes,
-          today + 30.minutes
-        ], per_minute.all.map { |row| row[:tick] }.uniq
-      end
-
-      it "should provide close price per currency per unit of time" do
-        usd_per_day = per_day.to_hash_groups(:currency)["USD"]
-        assert_equal 0.5.to_d, usd_per_day.first[:close]
-
-        eur_per_day = per_day.to_hash_groups(:currency)["EUR"]
-        assert_equal 2.4.to_d, eur_per_day.first[:close]
-      end
-    end
-
-    describe "weights subquery" do
-      let(:weights_per_tick) { Timeseries.new(tick: "15 minutes", from: today, to: today + 30.minutes, query: "SELECT * FROM weights").dataset.all }
-
-      before do
-        import(
-          weights: [
-            [:country, :time,              :weight],
-            ["us",     today,                  0.9],
-            ["us",     today + 10.minutes,     0.8],
-            ["de",     today,                  0.5],
-            ["de",     today + 25.minutes,     0.7]
-          ]
-        )
-      end
-
-      it "should populate a running weights table per country per tick" do
-        assert_equal [
-          {tick: today,              country: "us", weight: 0.9.to_d},
-          {tick: today,              country: "de", weight: 0.5.to_d},
-          {tick: today + 15.minutes, country: "us", weight: 0.8.to_d},
-          {tick: today + 15.minutes, country: "de", weight: 0.5.to_d},
-          {tick: today + 30.minutes, country: "us", weight: 0.8.to_d},
-          {tick: today + 30.minutes, country: "de", weight: 0.7.to_d}
-        ], weights_per_tick
-      end
-    end
-
   end
 
 end

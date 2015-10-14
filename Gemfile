@@ -16,4 +16,5 @@ end
 
 group :development do
   gem "git-deploy"
+  gem "byebug"
 end

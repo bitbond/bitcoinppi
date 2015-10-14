@@ -1,56 +1,7 @@
 -- timeseries.psql as used in Timeseries class
--- named_arguments :from, :to, :tick, :date_trunc
+-- named_arguments :from, :to, :tick
+SELECT
+  s.tick AS tick,
+  s.tick + interval :tick AS tick_end
+FROM generate_series(:from::timestamptz, :to::timestamptz, :tick) AS s(tick)
 
--- calendar table
-WITH series AS (
-  SELECT
-    s.tick AS tick,
-    s.tick + interval :tick AS tick_end
-  FROM generate_series(date_trunc(:date_trunc, :from::timestamptz), date_trunc(:date_trunc, :to::timestamptz), :tick) AS s(tick)
-),
--- get all bigmac prices with start - end timeframes
-bigmac_prices AS (
-  SELECT
-    *,
-    lag(time, 1, 'infinity'::timestamptz) OVER (
-      PARTITION BY country
-      ORDER BY time DESC
-    ) AS time_end
-  FROM bigmac_prices
-),
--- get all bitcoin prices with closing price
-bitcoin_prices AS (
-  SELECT
-    currency,
-    time,
-    series.tick AS tick,
-    last_value(price) OVER w AS close,
-    rank() OVER w AS rank
-  FROM bitcoin_prices
-  JOIN series ON time >= series.tick AND time < series.tick_end
-  WINDOW w AS (
-    PARTITION BY currency, series.tick
-    ORDER BY time
-    RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-  )
-),
--- get a populated weights table
-weights AS (
-  SELECT
-    series.tick as tick,
-    w.country AS country,
-    w.weight AS weight
-  FROM series
-  -- half cartesian join
-  -- will be restricted by the NOT EXISTS (...) below
-  -- used to populate series with weights
-  LEFT JOIN weights w ON date_trunc(:date_trunc, w.time) <= series.tick
-  WHERE NOT EXISTS (
-    SELECT *
-    FROM weights w2
-    WHERE
-      w2.country = w.country
-      AND w2.time <= series.tick
-      AND w2.time > w.time
-  )
-)
