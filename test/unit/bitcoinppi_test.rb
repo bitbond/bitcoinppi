@@ -68,8 +68,8 @@ describe Bitcoinppi do
     before { Timecop.freeze(today) }
     after { Timecop.return }
 
-    it "should return the corresponding tick as timestamp" do
-      assert_equal today, spot[:timestamp]
+    it "should return the corresponding tick as tick" do
+      assert_equal today, spot[:tick]
     end
 
     it "should return the global ppi" do
