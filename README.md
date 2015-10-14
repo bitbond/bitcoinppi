@@ -87,10 +87,6 @@ _Note: Some configurations require the database user to have a password._
 ## Seed data
 
 * Make sure you have all prerequisites installed (see Development)
-* Load data for `bigmac_prices` table
-
-        $ rake sources:bigmac_prices && rake refresh
-
 * Load all historical data:
 
         $ rake update_historical
