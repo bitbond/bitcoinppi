@@ -100,3 +100,8 @@ _Note: Some configurations require the database user to have a password._
 * Make sure you have all prerequisites installed (see Development)
 
 * Install crontab using `$ whenever --update-crontab` (you can read the resulting crontab using `$ whenever`)
+
+
+## License
+
+See [`LICENSE`](https://github.com/bitbond/bitcoinppi/blob/master/LICENSE) for more.
