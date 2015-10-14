@@ -24,6 +24,10 @@ before do
   cache_control :public, max_age: 15.minutes unless params[:bypass_caches]
 end
 
+error Timeseries::Invalid do
+  halt 400, { error: env["sinatra.error"].message }.to_json
+end
+
 get "/" do
   @timeseries = Timeseries.new(params)
   dataset = Bitcoinppi.global_ppi(@timeseries)
