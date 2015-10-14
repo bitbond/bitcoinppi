@@ -32,7 +32,6 @@ This endpoint returns data within the last 24 hours. **GET parameters** are igno
 
     HTTP/1.1 200 OK
     Content-Type: application/json
-    ETag: "10f84476-7927-475d-a996-0621c28b9a9c"
     Cache-Control: public, max-age=900
     Content-Length: 7292
     
