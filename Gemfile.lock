@@ -33,6 +33,7 @@ GEM
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
+    rdiscount (2.1.8)
     sequel (4.26.0)
     sinatra (1.4.6)
       rack (~> 1.4)
@@ -68,6 +69,7 @@ DEPENDENCIES
   git-deploy
   mocha
   pg
+  rdiscount
   sequel
   sinatra
   sinatra-contrib

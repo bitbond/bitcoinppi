@@ -7,6 +7,7 @@ gem "pg"
 gem "sequel"
 gem "activesupport"
 gem "whenever"
+gem "rdiscount"
 
 group :test do
   gem "mocha"

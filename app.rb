@@ -2,6 +2,7 @@ require_relative "./boot.rb"
 require "sinatra"
 require "sinatra/content_for"
 require "sinatra/json"
+require "rdiscount"
 
 helpers do
   def handle_versioning
@@ -9,6 +10,12 @@ helpers do
     unless Config["versions"].include?(requested_version)
       halt 400, { error: "Unsupported version: #{requested_version}", available_versions: Config["versions"] }.to_json
     end
+  end
+
+  def content(name)
+    markdown :"content/#{name}", layout: nil
+  rescue Errno::ENOENT
+    "Content not found: #{name}"
   end
 end
 
@@ -39,5 +46,13 @@ end
 
 get "/v:version/countries/:country", provides: "json" do |_version, country|
   json country => Bitcoinppi.countries(params).where(country: country)
+end
+
+get "/pages/:name" do |name|
+  begin
+    erb "<%= content %>", locals: { content: markdown(:"content/#{name}") }
+  rescue Errno::ENOENT
+    not_found
+  end
 end
 
