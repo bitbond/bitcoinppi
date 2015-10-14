@@ -47,7 +47,7 @@ module Bitcoinppi
   end
 
   def global_ppi(params)
-    timeseries = Timeseries.new(params)
+    timeseries = params.is_a?(Timeseries) ? params : Timeseries.new(params)
     dataset = Bitcoinppi.within_timeseries(timeseries)
       .select{[
         bitcoinppi__tick.as(:tick),

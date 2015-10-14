@@ -1,10 +1,82 @@
-<div id="bitcoinppi-global-dashboard" style="width: 960px; margin: 0 auto">
-  <div id="bitcoinppi-global-chart" style="width: 960px; height: 400px"></div>
-  <div id="bitcoinppi-global-filter-control" style="width: 960px; height: 75px"></div>
+<div class="row">
+  <div class="col-md-12">
+    <%= content(:landingpage_header) %>
+  </div>
+
+  <div id="bitcoinppi-global-dashboard" class="col-md-12">
+    <div id="date-controls">
+      <form class="form-inline" method="GET">
+        <input type="hidden" name="from" value="<%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %>">
+        <input type="hidden" name="to" value="<%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>">
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></div>
+            <input id="daterangepicker" class="form-control" style="width: 275px">
+          </div>
+        </div>
+        <select class="form-control" name="tick">
+          <option value="">auto</option>
+          <% Timeseries::VALID_TICKS.each do |tick| %>
+            <option <%= params["tick"] == tick ? "selected" : "" %>><%= tick %></option>
+          <% end %>
+        </select>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </form>
+    </div>
+    <div id="bitcoinppi-global-chart" style="width: 100%; height: 400px"></div>
+    <div id="bitcoinppi-global-filter-control" style="width: 100%; height: 75px"></div>
+  </div>
+
+  <div class="col-md-12">
+    <%= content(:landingpage_body) %>
+  </div>
 </div>
 
+<% content_for :head do %>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+<% end %>
+
 <% content_for :script do %>
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <script type="text/javascript">
+$(function() {
+  var form = $("#date-controls form");
+
+  $("#daterangepicker").daterangepicker({
+    timePicker: true,
+    timePicker24Hour: true,
+    minDate: "07/01/2011",
+    locale: {
+      format: "YYYY-MM-DD hh:mm"
+    },
+    startDate: '<%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %>',
+    endDate: '<%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>',
+    ranges: {
+      "24 hours": [moment().subtract(1, "day"), moment()],
+      "1 week": [moment().subtract(1, "week"), moment()],
+      "1 month": [moment().subtract(1, "month"), moment()],
+      "year to date": [moment().startOf("year"), moment()]
+    }
+  }, function(from, to) {
+    form.find("input[name=from]").val(from.format("YYYY-MM-DD hh:mm"));
+    form.find("input[name=to]").val(to.format("YYYY-MM-DD hh:mm"));
+    form.trigger("submit");
+  });
+
+  $(window).resize(function() {
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = setTimeout(function() {
+      $(window).trigger("resize-end");
+    }, 100);
+  });
+
+  $(window).on("resize-end", function() {
+    console.log("resized");
+    drawChart();
+  });
+});
+
 google.setOnLoadCallback(drawChart);
 google.load("visualization", "1.1", { packages: ["corechart", "controls"] });
 
@@ -14,7 +86,7 @@ function drawChart() {
     chartType: "LineChart",
     containerId: "bitcoinppi-global-chart",
     options: {
-      chartArea: { width: "90%", height: "80%" },
+      chartArea: { width: "90%", height: "90%" },
       hAxis: { slantedText: false },
       legend: { position: "none" },
       focusTarget: "category",
@@ -37,7 +109,7 @@ function drawChart() {
         chartType: "LineChart",
         chartOptions: {
           curveType: "function",
-          chartArea: { width: "90%", height: "80%" },
+          chartArea: { width: "90%", height: "100%" },
           hAxis: {
             baselineColor: "none"
           }

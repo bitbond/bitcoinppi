@@ -40,6 +40,7 @@ class Timeseries
 
   def initialize(params = {})
     from, to, tick = params.stringify_keys.values_at("from", "to", "tick")
+    tick = tick.blank? ? nil : tick
     now = DateTime.now
     @from = from ? parse(from) : now - 1.year
     @to = to ? parse(to) : now
