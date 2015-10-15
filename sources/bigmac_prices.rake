@@ -12,7 +12,7 @@ namespace :sources do
 
     table.each do |date, *data|
       data.each_with_index do |price, index|
-        country = countries[index]
+        country = Country.find_country_by_name(countries[index]) or raise "Could not find country: #{countries[index]}"
         currency = currencies[index]
         begin
           DB[:bigmac_prices].insert(country: country, time: DateTime.parse(date), currency: currency, price: price.sub(",", ""))

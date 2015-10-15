@@ -6,6 +6,7 @@ Bundler.setup
 require "pg"
 require "sequel"
 require "active_support/all"
+require "global"
 
 Root = Pathname.new(File.dirname(__FILE__))
 Config = YAML.load_file(Root.join("config", "app.yml"))

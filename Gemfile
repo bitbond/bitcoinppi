@@ -8,6 +8,7 @@ gem "sequel"
 gem "activesupport"
 gem "whenever"
 gem "rdiscount"
+gem "countries"
 
 group :test do
   gem "mocha"
