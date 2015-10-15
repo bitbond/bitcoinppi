@@ -1,5 +1,7 @@
 versions:
   - "1.0"
+pages:
+  api: API
 currencies:
   - CNY
   - INR

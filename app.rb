@@ -2,7 +2,9 @@ require_relative "./boot.rb"
 require "sinatra"
 require "sinatra/content_for"
 require "sinatra/json"
-require "rdiscount"
+require "sinatra/reloader" if settings.development?
+require "tilt/erb"
+require "tilt/rdiscount"
 
 helpers do
   def handle_versioning
@@ -16,6 +18,22 @@ helpers do
     markdown :"content/#{name}", layout: nil
   rescue Errno::ENOENT
     "Content not found: #{name}"
+  end
+
+  def page_title
+    title = yield_content(:title)
+    title ||= Config["pages"][request.path.sub("/pages", "")]
+    title || "Bitcoinppi"
+  end
+
+  def google_charts_src
+    modules = { modules: [{
+      name: "visualization",
+      version: "1.0",
+      packages: [ "corechart", "controls" ],
+      language: "en"
+    }] }
+    "https://www.google.com/jsapi?autoload=#{CGI.escape(modules.to_json)}"
   end
 end
 

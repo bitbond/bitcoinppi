@@ -32,7 +32,7 @@ class Timeseries
     ticks -= ["1 hour"] if interval >= 1.week
     ticks -= ["6 hours"] if interval >= 1.month
     ticks -= ["12 hours"] if interval >= 3.months
-    ticks -= ["1 day"] if interval > 1.year
+    ticks -= ["1 day"] if interval > 2.years
     ticks
   end
 
@@ -44,7 +44,7 @@ class Timeseries
     now = DateTime.now
     @from = from ? parse(from) : now - 1.year
     @to = to ? parse(to) : now
-    @tick = tick || (valid_ticks.include?("1 day") ? "1 day" : valid_ticks.first)
+    @tick = tick || valid_ticks.last
     ensure_within_bounds
     ensure_valid_tick
   end

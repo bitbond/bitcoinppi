@@ -13,15 +13,23 @@ All endpoints except for `spot` accept these parameters that let you define the 
 
 All times are expected in UTC, and `to` is expected to be later than `from`. For calculting the resolution, the given times will be truncated to their unit of resolution (e.g. '2015-10-14 12:47' will become '2015-10-14 12:00' when using '1 hour').
 
-* `from`  
-    default: 1 year ago  
+<dl class="dl-horizontal">
+  <dt>from</dt>
+  <dd>
+    default: 1 year ago<br>
     format: YYYY-mm-dd or YYYY-mm-dd HH:00
-* `to`  
-    default: now  
+  </dd>
+  <dt>to</dt>
+  <dd>
+    default: now<br>
     format: YYYY-mm-dd or YYYY-mm-dd HH:00
-* `tick`  
-    default: 1 day  
+  </dd>
+  <dt>tick</dt>
+  <dd>
+    default: 1 day<br>
     allowed: 7 days, 1 day, 12 hours, 6 hours, 1 hour, 30 minutes, 15 minutes
+  </dd>
+</dl>
 
 ### `GET /v1.0/spot`
 
