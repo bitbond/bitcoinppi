@@ -3,7 +3,7 @@ require_relative "../test_helper.rb"
 describe Timeseries do
   let(:today) { DateTime.now.beginning_of_day }
   let(:yesterday) { today - 1.day }
-  let(:timeseries) { Timeseries.new(query: "SELECT 1") }
+  let(:timeseries) { Timeseries.new }
 
   describe "::new" do
     it "should default :from to one year ago" do
