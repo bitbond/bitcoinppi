@@ -25,6 +25,8 @@
           <%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %> - <%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>
         </div>
       </div>
+
+      <button id="download-csv" class="btn btn-default"><i class="glyphicon glyphicon-download-alt"></i> Download CSV</button>
     </div>
   </form>
 <% end %>
@@ -127,6 +129,14 @@ $(function(){
 
   $(window).on("resize-end", function() {
     drawChart();
+  });
+
+  form.on("click", "#download-csv", function(event) {
+    event.preventDefault();
+    from = form.find("input[name=from]").val();
+    to = form.find("input[name=to]").val();
+    var url = "/v1.0/global_ppi.csv?from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to);
+    window.location.href = url;
   });
 });
 </script>

@@ -42,7 +42,7 @@ module Bitcoinppi
   def countries(params)
     timeseries = Timeseries.new(params)
     dataset = Bitcoinppi.within_timeseries(timeseries)
-      .select(:time, :country, :currency, :bitcoin_price, :bigmac_price, :weight, :local_ppi, :global_ppi, :tick)
+      .select(:time, :tick, :country, :currency, :bitcoin_price, :bigmac_price, :weight, :local_ppi, :global_ppi)
       .where(rank: 1)
       .order(Sequel.desc(:time))
   end

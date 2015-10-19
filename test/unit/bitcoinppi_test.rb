@@ -41,7 +41,7 @@ describe Bitcoinppi do
         [:country,        :currency, :time,     :price],
         ["United States", "USD",     yesterday, 10.00],
         ["Germany",       "EUR",     yesterday, 20.00],
-        ["Germany", "EUR",     today - 30.minutes,  25.00],
+        ["Germany",       "EUR",     today - 30.minutes,  25.00],
       ],
       weights: [
         [:country,        :time,     :weight],

@@ -3,15 +3,27 @@ require "sinatra"
 require "sinatra/content_for"
 require "sinatra/json"
 require "sinatra/reloader" if settings.development?
+require "sinatra/respond_with"
 require "tilt/erb"
 require "tilt/rdiscount"
 require "newrelic_rpm" if settings.production?
+require "csv"
 
 helpers do
   def handle_versioning
     return unless requested_version = request.path =~ %r{\A/v(\d+\.\d+)} && $1
     unless Config["versions"].include?(requested_version)
       halt 400, { error: "Unsupported version: #{requested_version}", available_versions: Config["versions"] }.to_json
+    end
+  end
+
+  def handle_csv
+    if request.path_info =~ /\.csv$/
+      halt 406 unless request.accept?("text/csv")
+      request.accept.unshift(Sinatra::Request::AcceptEntry.new("text/csv"))
+      request.path_info.sub!(/\.csv$/, "")
+    else
+      halt 406 if request.preferred_type.to_s == "text/csv"
     end
   end
 
@@ -36,10 +48,25 @@ helpers do
     }] }
     "https://www.google.com/jsapi?autoload=#{CGI.escape(modules.to_json)}"
   end
+
+  def dataset_response(key, dataset)
+    respond_to do |format|
+      format.csv do
+        attachment "#{key}.csv"
+        Util.array_of_hashes_to_csv(dataset.all)
+      end
+
+      format.json do
+        { key => dataset.all }.to_json
+      end
+    end
+  end
+
 end
 
 before do
   handle_versioning
+  handle_csv
   cache_control :public, max_age: 15.minutes unless params[:bypass_caches]
 end
 
@@ -56,20 +83,20 @@ get "/" do
   erb :landingpage
 end
 
-get "/v:version/spot", provides: "json" do
+get "/v:version/spot", provides: %i[json] do
   json spot: Bitcoinppi.spot, countries: Bitcoinppi.spot_countries
 end
 
-get "/v:version/global_ppi", provides: "json" do
-  json global_ppi: Bitcoinppi.global_ppi(params).all
+get "/v:version/global_ppi", provides: %i[json csv] do
+  dataset_response :global_ppi, Bitcoinppi.global_ppi(params)
 end
 
-get "/v:version/countries", provides: "json" do
-  json countries: Bitcoinppi.countries(params)
+get "/v:version/countries", provides: %i[json csv] do
+  dataset_response :countries, Bitcoinppi.countries(params)
 end
 
-get "/v:version/countries/:country", provides: "json" do |_version, country|
-  json country => Bitcoinppi.countries(params).where(country: country)
+get "/v:version/countries/:country", provides: %i[json csv] do |_version, country|
+  dataset_response country, Bitcoinppi.countries(params).where(country: country)
 end
 
 get "/pages/:name" do |name|
