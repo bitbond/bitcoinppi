@@ -99,7 +99,8 @@ $(function(){
       "24 hours": [moment().subtract(1, "day"), moment()],
       "1 week": [moment().subtract(1, "week"), moment()],
       "1 month": [moment().subtract(1, "month"), moment()],
-      "year to date": [moment().startOf("year"), moment()]
+      "year to date": [moment().startOf("year"), moment()],
+      "max range": ["2011-07-01", moment()]
     }
   }, function(from, to) {
     form.find("input[name=from]").val(from.format("YYYY-MM-DD hh:mm"));
