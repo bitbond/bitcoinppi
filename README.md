@@ -8,7 +8,7 @@ See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/
 
 **Example:**
 
-    curl http://bitcoinppi.org/v1.0/spot
+    curl http://bitcoinppi.com/v1.0/spot
 
 **Response:**
 

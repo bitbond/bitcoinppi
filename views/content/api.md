@@ -44,7 +44,7 @@ This endpoint returns data within the last 24 hours. **GET parameters** are igno
 
 **Example:**
 
-    curl http://bitcoinppi.org/v1.0/spot
+    curl http://bitcoinppi.com/v1.0/spot
 
 **Response:**
 
@@ -101,11 +101,11 @@ By default it returns data from the last year at a resolution of 1 day.
 
 **Examples:**
 
-    curl http://bitcoinppi.org/v1.0/global_ppi
+    curl http://bitcoinppi.com/v1.0/global_ppi
 
-    curl 'http://bitcoinppi.org/v1.0/global_ppi?from=2011-07-01&to=2013-04-30'
+    curl 'http://bitcoinppi.com/v1.0/global_ppi?from=2011-07-01&to=2013-04-30'
 
-    curl 'http://bitcoinppi.org/v1.0/global_ppi?from=2011-07-01&to=2013-04-30&tick=7+days'
+    curl 'http://bitcoinppi.com/v1.0/global_ppi?from=2011-07-01&to=2013-04-30&tick=7+days'
 
 **Response:**
 
@@ -137,11 +137,11 @@ By default it returns data from the last year at a resolution of 1 day.
 
 **Examples:**
 
-    curl http://bitcoinppi.org/v1.0/countries
+    curl http://bitcoinppi.com/v1.0/countries
 
-    curl 'http://bitcoinppi.org/v1.0/countries?from=2014-07-01&to=2015-04-30'
+    curl 'http://bitcoinppi.com/v1.0/countries?from=2014-07-01&to=2015-04-30'
 
-    curl 'http://bitcoinppi.org/v1.0/countries?from=2014-07-01&to=2015-04-30&tick=7+days'
+    curl 'http://bitcoinppi.com/v1.0/countries?from=2014-07-01&to=2015-04-30&tick=7+days'
 
 **Response:**
 
@@ -193,11 +193,11 @@ By default it returns data from the last year at a resolution of 1 day.
 
 **Examples:**
 
-    curl http://bitcoinppi.org/v1.0/countries/DE
+    curl http://bitcoinppi.com/v1.0/countries/DE
 
-    curl 'http://bitcoinppi.org/v1.0/countries/DE?from=2014-07-01&to=2015-04-30'
+    curl 'http://bitcoinppi.com/v1.0/countries/DE?from=2014-07-01&to=2015-04-30'
 
-    curl 'http://bitcoinppi.org/v1.0/countries/DE?from=2014-07-01&to=2015-04-30&tick=7+days'
+    curl 'http://bitcoinppi.com/v1.0/countries/DE?from=2014-07-01&to=2015-04-30&tick=7+days'
 
 **Response:**
 
