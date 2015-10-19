@@ -41,6 +41,9 @@ google.setOnLoadCallback(drawChart);
 function drawChart() {
   var initialData = new google.visualization.DataTable(<%= @data_table.as_json.to_json %>);
 
+  var formatter = new google.visualization.NumberFormat({negativeParens: false});
+  formatter.format(initialData, 1); // Apply formatter to global_ppi column (2nd)
+
   var chart = new google.visualization.ChartWrapper({
     chartType: "LineChart",
     containerId: "bitcoinppi-global-chart",
