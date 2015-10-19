@@ -1,7 +1,7 @@
 set :output, error: "log/cron.err", standard: "log/cron.log"
 
 every 15.minutes do
-  rake "update_bitcoinaverage"
+  rake "update_bitcoin_prices"
 end
 
 every 1.week do

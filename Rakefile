@@ -18,8 +18,8 @@ task refresh: :boot do
   puts "bitcoinppi refresh took #{(Time.now - now).to_f}s"
 end
 
-desc "Updates from bitcoinaverage and refreshes bitcoinppi materialized view"
-task update_bitcoinaverage: "sources:bitcoinaverage" do
+desc "Updates bitcoin_prices table from bitcoinaverage and refreshes bitcoinppi materialized view"
+task update_bitcoin_prices: ["sources:bitcoinaverage", "sources:bitcoincharts"] do
   Rake::Task["refresh"].invoke
 end
 
