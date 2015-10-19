@@ -18,7 +18,7 @@ namespace :sources do
         inserts = 0
         csv.each do |row|
           begin
-            DB[:bitcoin_prices].insert(currency: currency, time: row["Date"], price: row["24h Average"])
+            DB[:bitcoin_prices].insert(currency: currency, time: row["Date"], price: row["24h Average"], source: "bitcoinaverage/quandl")
             inserts += 1
           rescue Sequel::UniqueConstraintViolation
           end

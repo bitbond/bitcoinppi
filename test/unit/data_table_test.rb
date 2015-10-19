@@ -4,6 +4,10 @@ describe DataTable do
   let(:dataset) { DB[:bitcoin_prices] }
   let(:data_table) { DataTable.new(dataset) }
 
+  before do
+    dataset.stubs(:columns).returns(%i[currency time price])
+  end
+
   describe "::new" do
     it "should initialize default columns" do
       assert_equal({

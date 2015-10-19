@@ -12,9 +12,9 @@ namespace :sources do
     values = json.map do |currency, data|
       next unless Config["currencies"].include?(currency)
       next unless price = data["24h"]
-      [currency, time, price]
+      [currency, time, price, "bitcoincharts"]
     end.compact
-    DB[:bitcoin_prices].import([:currency, :time, :price], values)
+    DB[:bitcoin_prices].import([:currency, :time, :price, :source], values)
 
     puts "Inserted #{values.size} new rows to bitcoin_prices"
   end
