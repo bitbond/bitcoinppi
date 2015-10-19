@@ -1,3 +1,5 @@
+require "newrelic_rpm" if ENV["RACK_ENV"] == "production"
+
 Rake.add_rakelib("sources")
 
 task default: :test
