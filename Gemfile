@@ -20,3 +20,8 @@ group :development do
   gem "git-deploy"
   gem "byebug"
 end
+
+group :production do
+  gem "newrelic_rpm"
+end
+

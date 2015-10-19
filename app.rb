@@ -5,6 +5,7 @@ require "sinatra/json"
 require "sinatra/reloader" if settings.development?
 require "tilt/erb"
 require "tilt/rdiscount"
+require "newrelic_rpm" if settings.production?
 
 helpers do
   def handle_versioning

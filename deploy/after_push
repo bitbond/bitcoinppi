@@ -21,8 +21,12 @@ gem install bundler
 rbenv rehash
 bundler install --deployment --binstubs ./bin
 
-# Configuration
+# configure database credentials
 cp -v ~/.database_credentials ./config/
+
+# configure newrelic license key
+sed -i "s/license_key:.*$/license_key: $(cat ~/.newrelic_license)/" config/newrelic.yml
+
 bin/whenever --update-crontab
 
 run deploy/before_restart

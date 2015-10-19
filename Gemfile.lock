@@ -32,6 +32,7 @@ GEM
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.6.8)
+    newrelic_rpm (3.13.2.302)
     pg (0.18.3)
     rack (1.6.4)
     rack-protection (1.5.3)
@@ -74,6 +75,7 @@ DEPENDENCIES
   database_cleaner
   git-deploy
   mocha
+  newrelic_rpm
   pg
   rdiscount
   sequel
