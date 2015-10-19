@@ -22,7 +22,7 @@ See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/
       "spot": {
         "tick": "2015-10-15T10:30:00.000+02:00",
         "global_ppi": "51.110243502525189243",
-        "avg_global_ppi": "50.9007122538474498736044"
+        "avg_24h_global_ppi": "50.9007122538474498736044"
       },
       "countries": {
         "CN": {
@@ -34,10 +34,9 @@ See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/
           "weight": "0.1",
           "local_ppi": "97.1852941176470588",
           "global_ppi": "9.71852941176470588",
-          "rank": 1,
           "tick": "2015-10-15T10:30:00.000+02:00",
-          "avg_global_ppi": "9.626111182934712347",
-          "avg_local_ppi": "96.2611118293471235"
+          "avg_24h_global_ppi": "9.626111182934712347",
+          "avg_24h_local_ppi": "96.2611118293471235"
         },
         ...
         "US": {
@@ -49,10 +48,9 @@ See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/
           "weight": "0.05",
           "local_ppi": "53.2484342379958246",
           "global_ppi": "2.66242171189979123",
-          "rank": 1,
           "tick": "2015-10-15T10:30:00.000+02:00",
-          "avg_global_ppi": "2.660231939250728395",
-          "avg_local_ppi": "53.2046387850145679"
+          "avg_24h_global_ppi": "2.660231939250728395",
+          "avg_24h_local_ppi": "53.2046387850145679"
         }
       }   
     }

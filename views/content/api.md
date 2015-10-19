@@ -58,7 +58,7 @@ This endpoint returns data within the last 24 hours. **GET parameters** are igno
       "spot": {
         "tick": "2015-10-15T10:30:00.000+02:00",
         "global_ppi": "51.110243502525189243",
-        "avg_global_ppi": "50.9007122538474498736044"
+        "avg_24h_global_ppi": "50.9007122538474498736044"
       },
       "countries": {
         "CN": {
@@ -70,10 +70,9 @@ This endpoint returns data within the last 24 hours. **GET parameters** are igno
           "weight": "0.1",
           "local_ppi": "97.1852941176470588",
           "global_ppi": "9.71852941176470588",
-          "rank": 1,
           "tick": "2015-10-15T10:30:00.000+02:00",
-          "avg_global_ppi": "9.626111182934712347",
-          "avg_local_ppi": "96.2611118293471235"
+          "avg_24h_global_ppi": "9.626111182934712347",
+          "avg_24h_local_ppi": "96.2611118293471235"
         },
         ...
         "US": {
@@ -85,10 +84,9 @@ This endpoint returns data within the last 24 hours. **GET parameters** are igno
           "weight": "0.05",
           "local_ppi": "53.2484342379958246",
           "global_ppi": "2.66242171189979123",
-          "rank": 1,
           "tick": "2015-10-15T10:30:00.000+02:00",
-          "avg_global_ppi": "2.660231939250728395",
-          "avg_local_ppi": "53.2046387850145679"
+          "avg_24h_global_ppi": "2.660231939250728395",
+          "avg_24h_local_ppi": "53.2046387850145679"
         }
       }   
     }
@@ -162,10 +160,9 @@ By default it returns data from the last year at a resolution of 1 day.
           "weight": "0.03",
           "local_ppi": "61.7688022284122563",
           "global_ppi": "1.853064066852367689",
-          "rank": 1,
           "tick": "2015-10-15T00:00:00.000+02:00",
-          "avg_global_ppi": "1.952150885169753188",
-          "avg_local_ppi": "65.0716961723251063"
+          "avg_24h_global_ppi": "1.952150885169753188",
+          "avg_24h_local_ppi": "65.0716961723251063"
         },
         ...
         {
@@ -177,10 +174,9 @@ By default it returns data from the last year at a resolution of 1 day.
           "weight": "0.05",
           "local_ppi": "82.1770833333333333",
           "global_ppi": "4.108854166666666665",
-          "rank": 1,
           "tick": "2014-10-15T00:00:00.000+02:00",
-          "avg_global_ppi": "2.836662227607797057",
-          "avg_local_ppi": "56.7332445521559411"
+          "avg_24h_global_ppi": "2.836662227607797057",
+          "avg_24h_local_ppi": "56.7332445521559411"
         }
       ]
     }
@@ -218,10 +214,9 @@ By default it returns data from the last year at a resolution of 1 day.
           "weight": "0.03",
           "local_ppi": "61.7688022284122563",
           "global_ppi": "1.853064066852367689",
-          "rank": 1,
           "tick": "2015-10-15T00:00:00.000+02:00",
-          "avg_global_ppi": "1.952150885169753188",
-          "avg_local_ppi": "65.0716961723251063"
+          "avg_24h_global_ppi": "1.952150885169753188",
+          "avg_24h_local_ppi": "65.0716961723251063"
         },
         ...
         {
@@ -233,10 +228,9 @@ By default it returns data from the last year at a resolution of 1 day.
           "weight": "0.03",
           "local_ppi": "85.0408719346049046",
           "global_ppi": "2.551226158038147138",
-          "rank": 1,
           "tick": "2014-10-15T00:00:00.000+02:00",
-          "avg_global_ppi": "1.952150885169753188",
-          "avg_local_ppi": "65.0716961723251063"
+          "avg_24h_global_ppi": "1.952150885169753188",
+          "avg_24h_local_ppi": "65.0716961723251063"
         }
       ]
     }

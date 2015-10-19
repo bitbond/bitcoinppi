@@ -82,7 +82,7 @@ describe Bitcoinppi do
     end
 
     it "should return the average global ppi over the last 24 hours" do
-      assert_equal 10.254.to_d, spot[:avg_global_ppi]
+      assert_equal 10.254.to_d, spot[:avg_24h_global_ppi]
     end
   end
 
@@ -105,14 +105,14 @@ describe Bitcoinppi do
 
     it "should return the average local ppi per country" do
       us, de = spot_countries["United States"], spot_countries["Germany"]
-      assert_equal 10.5.to_d, us[:avg_local_ppi]
-      assert_equal 9.27.to_d, de[:avg_local_ppi]
+      assert_equal 10.5.to_d, us[:avg_24h_local_ppi]
+      assert_equal 9.27.to_d, de[:avg_24h_local_ppi]
     end
 
     it "should return the average global ppi per country" do
       us, de = spot_countries["United States"], spot_countries["Germany"]
-      assert_equal 8.4.to_d, us[:avg_global_ppi]
-      assert_equal 1.854.to_d, de[:avg_global_ppi]
+      assert_equal 8.4.to_d, us[:avg_24h_global_ppi]
+      assert_equal 1.854.to_d, de[:avg_24h_global_ppi]
     end
   end
 
