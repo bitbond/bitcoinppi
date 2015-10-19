@@ -13,9 +13,8 @@ umask 002
 
 git submodule sync && git submodule update --init --recursive
 
-# Install dependencies
+# Install ruby and its dependencies
 source ~/.rbenvrc
-
 rbenv install --keep --skip-existing `cat .ruby-version`
 gem install bundler
 rbenv rehash
@@ -27,8 +26,13 @@ cp -v ~/.database_credentials ./config/
 # configure newrelic license key
 sed -i "s/license_key:.*$/license_key: $(cat ~/.newrelic_license)/" config/newrelic.yml
 
+# install crontab
 bin/whenever --update-crontab
 
-run deploy/before_restart
-run deploy/restart && run deploy/after_restart
+# Restart application server
+run deploy/restart
+
+# record deployment in NewRelic
+echo -n "NewRelic: "
+bin/newrelic deployments --environment=production --revision=$newrev 2>&1
 
