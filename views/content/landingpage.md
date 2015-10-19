@@ -12,6 +12,8 @@ One of the main goals of monetary policy is to preserve the purchasing power of 
 Despite this goal, most currencies around the globe don’t do a sufficient job in the preservation of purchasing power.
 Often this is due to conflicting goals like managing foreign exchange rates and economic activity.
 
+New paragraph for test
+
 In order to express the value of bitcoin in a way so it considers economic development around the world,
 the bitcoinppi has been invented.
 In short it says how many Big Mac burgers can be purchased with one bitcoin.
