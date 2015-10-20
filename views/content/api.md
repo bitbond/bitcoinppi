@@ -10,7 +10,19 @@ In general the data is updated every 15 minutes. Caching rules are set to store 
 The current version must be prepended to all API requests.
 A request `/spot` should be made as `/v1.0/spot`.
 
+Additional features will be added to the current version. But breaking features or bugfixes will increment the version.
+This ensures that older clients can continue to work with the API as expected.
+
 * `/v1.0` The initial release.
+
+### JSON
+
+The API defaults to JSON responses.
+
+### CSV
+
+All endpoints except for `/spot` allow for csv responses. A csv response can be initiated by appending `.csv` to the request path.
+The csv is **utf-8** encoded and has a `,` **comma as field separator**. Each line is separated with a **unix newline character** `\n`.
 
 ### GET parameters
 
@@ -97,6 +109,8 @@ This endpoint returns all global_ppi values over a defined time series.
 The timeframe can be adjusted using the **GET parameters** declared above.
 By default it returns data from the last year at a resolution of 1 day.
 
+The default response type is **JSON**. To receive a **CSV** response, append `.csv` to the request path.
+
 **Examples:**
 
     curl http://bitcoinppi.com/v1.0/global_ppi
@@ -132,6 +146,8 @@ By default it returns data from the last year at a resolution of 1 day.
 This endpoint returns all ppi values of all countries, over a defined time series.
 The timeframe can be adjusted using the **GET parameters** declared above.
 By default it returns data from the last year at a resolution of 1 day.
+
+The default response type is **JSON**. To receive a **CSV** response, append `.csv` to the request path.
 
 **Examples:**
 
@@ -186,6 +202,8 @@ By default it returns data from the last year at a resolution of 1 day.
 This endpoint returns all ppi values by country, over a defined time series. The part **:country** should be set as an **uppercase ISO3166 alpha2** country code.
 The timeframe can be adjusted using the **GET parameters** declared above.
 By default it returns data from the last year at a resolution of 1 day.
+
+The default response type is **JSON**. To receive a **CSV** response, append `.csv` to the request path.
 
 **Examples:**
 
