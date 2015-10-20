@@ -1,4 +1,4 @@
-# bitcoinppi ![](http://inch-ci.org/github/bitbond/bitcoinppi.svg?branch=master)
+# bitcoinppi [![inch-ci](http://inch-ci.org/github/bitbond/bitcoinppi.svg?branch=master)](http://inch-ci.org/github/bitbond/bitcoinppi/branch/master)
 
 bitcoin purchasing power index (bitcoinppi).
 
