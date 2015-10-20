@@ -18,10 +18,12 @@
     <input type="hidden" name="from" value="<%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %>">
     <input type="hidden" name="to" value="<%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>">
 
-    <div class="form-group">
-      <div class="input-group">
-        <div class="input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></div>
-        <input id="daterangepicker" class="form-control" style="width: 265px">
+    <div class="form-group" style="cursor: pointer">
+      <div id="daterangepicker" class="input-group">
+        <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+        <div class="form-control" style="width: 265px">
+          <%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %> - <%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>
+        </div>
       </div>
     </div>
   </form>
@@ -75,7 +77,7 @@ function drawChart() {
             baselineColor: "none"
           }
         },
-        minRangeSize: <%= 1.day %>
+        minRangeSize: <%= @timeseries.tick_in_seconds %>
       }
     }
   });
@@ -86,25 +88,33 @@ function drawChart() {
 $(function(){
   var form = $("#timeframe-form");
 
+  function updateDateRange(from, to) {
+    from = from.format("YYYY-MM-DD hh:mm");
+    to = to.format("YYYY-MM-DD hh:mm")
+    form.find("input[name=from]").val(from);
+    form.find("input[name=to]").val(to);
+    $("#daterangepicker .display").text(from + " - " + to);
+  };
+
   $("#daterangepicker").daterangepicker({
     timePicker: true,
     timePicker24Hour: true,
     minDate: "07/01/2011",
+    opens: "center",
     locale: {
       format: "YYYY-MM-DD hh:mm"
     },
     startDate: '<%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %>',
     endDate: '<%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>',
     ranges: {
-      "24 hours": [moment().subtract(1, "day"), moment()],
-      "1 week": [moment().subtract(1, "week"), moment()],
-      "1 month": [moment().subtract(1, "month"), moment()],
-      "year to date": [moment().startOf("year"), moment()],
-      "max range": ["2011-07-01", moment()]
+      "24 hours": [moment().subtract(1, "day").minutes(0), moment().minutes(0)],
+      "1 week": [moment().subtract(1, "week").minutes(0), moment().minutes(0)],
+      "1 month": [moment().subtract(1, "month").minutes(0), moment().minutes(0)],
+      "year to date": [moment().startOf("year").minutes(0).hour(0), moment().minutes(0).hour(0)],
+      "max range": ["2011-07-01 00:00", moment().minutes(0).hour(0)]
     }
   }, function(from, to) {
-    form.find("input[name=from]").val(from.format("YYYY-MM-DD hh:mm"));
-    form.find("input[name=to]").val(to.format("YYYY-MM-DD hh:mm"));
+    updateDateRange(from, to);
     form.trigger("submit");
   });
 

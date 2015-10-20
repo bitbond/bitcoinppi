@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h1>Bitcoinppi <small>Bitcoin purchasing power index</small></h1>
+  <h1>Bitcoin purchasing power index</h1>
 </div>
 
 Currencies are used as a store of value, a unit of account and a medium of exchange.

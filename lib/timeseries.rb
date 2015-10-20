@@ -73,6 +73,11 @@ class Timeseries
     truncate_datetime(to)
   end
 
+  def tick_in_seconds
+    return unless VALID_TICKS.include?(tick)
+    eval(tick.sub(" ", "."))
+  end
+
   private
 
   def parse(string)
