@@ -1,26 +1,82 @@
+# Takes a Sequel::Dataset and transforms it into the weird GoogleData table structure.
+#
+# Example
+#
+#   data_table = DataTable.new(DB[:bitcoin_prices])
+#   data_table.set_column(:price, type: "number") { |price| price.round(2) }
+#   data_table.as_json
+#   # => { cols: [...], rows: [...] }
+#
 class DataTable
 
   attr_reader :dataset, :columns
 
+  # Public: Initialize a new DataTable with a Sequel dataset
+  #
+  # dataset - The Sequel::Dataset to initialize with
+  #
+  # Example
+  #
+  #   DataTable.new(DB[:bitcoin_prices])
+  #   # => #<DataTable:0x007fe6858c9560 ...>
+  #
+  # Returns an instance of DataTable
   def initialize(dataset)
     @dataset = dataset
-    @columns = default_columns
     yield(self) if block_given?
   end
 
-  def column_names
-    @columns.keys
+  # Public: return the column configuration
+  #
+  # Example
+  #
+  #   data_table.columns
+  #   # => { foo: { id: "foo", label: "Foo", type: "string" } }
+  #
+  # Returns a hash per column
+  def columns
+    @columns ||= default_columns
   end
 
+  def column_names
+    columns.keys
+  end
+
+  # Public: set configuration for a column
+  #
+  # name    - The name of the column
+  # options - The configuration to merge
+  #           Available configurations or a Google DataTable are :id, :label and :type
+  # block   - An optional block that transform the value on evaluation
+  #
+  # Examples
+  #
+  #   data_table.set_column(:foo, type: "number")
+  #   # => #<DataTable:0x007fe6858c9560 ...>
+  #
+  #   data_table.set_column(:foo, type: "number") { |value, row| value.round(2) }
+  #   # => #<DataTable:0x007fe6858c9560 ...>
+  #
+  # Returns itself
   def set_column(name, options = {}, &block)
-    column = @columns[name] ||= default_column(name)
+    column = columns[name] ||= default_column(name)
     column.merge!(options)
     column[:block] = block if block
     self
   end
 
+  # Public: remove a column
+  #
+  # name - The name of the column
+  #
+  # Example
+  #
+  #   data_table.remove_column(:foo)
+  #   # => #<DataTable:0x007fe6858c9560 ...>
+  #
+  # Returns itself
   def remove_column(name)
-    @columns.delete(name)
+    columns.delete(name)
     self
   end
 

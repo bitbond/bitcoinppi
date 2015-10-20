@@ -46,9 +46,11 @@ describe DataTable do
   describe "#rows" do
     let(:datetime) { DateTime.now }
     before do
-      data_table.stubs(:dataset).returns([
+      dataset = [
         { currency: "USD", time: datetime, price: 2.0.to_d }
-      ])
+      ]
+      dataset.stubs(:columns).returns(%i[currency time price])
+      data_table.stubs(:dataset).returns(dataset)
     end
 
     it "should all mapped rows in a nested {c: [{v: ""}]} structure" do

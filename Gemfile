@@ -19,6 +19,7 @@ end
 group :development do
   gem "git-deploy"
   gem "byebug"
+  gem "inch"
 end
 
 group :production do
