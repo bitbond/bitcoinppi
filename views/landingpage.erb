@@ -7,15 +7,13 @@
   %>
   <h2><%= today[:global_ppi].round(2) %> <span class="diff <%= css_class %>"><%= diff.round(2) %> (<%= percent.round(2) %>%)</span></h2>
   <p><%= today[:tick].strftime("%b %-d, %H:%M UTC") %></p>
-  <div id="bitcoinppi-global-dashboard" class="col-md-12">
-    <div id="date-controls">
-      <form class="form-inline" method="GET">
-      </form>
-    </div>
-    <div id="bitcoinppi-global-chart" style="width: 100%; height: 400px"></div>
-    <div id="bitcoinppi-global-filter-control" style="width: 100%; height: 75px"></div>
+</div>
+<div class="row">
+  <div id="chart" class="col-md-9"></div>
+  <div id="legend" class="col-md-3">
   </div>
-
+</div>
+<div class="row">
   <div class="col-md-12">
     <%= content(:landingpage) %>
   </div>
@@ -41,112 +39,92 @@
 
 <% content_for :head do %>
   <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+  <style>
+    .diff {
+      font-size: 70%;
+      font-weight: normal;
+    }
+    .diff.positive:before {
+      content: "+";
+    }
+    .diff.positive {
+      color: green;
+    }
+    .diff.negative {
+      color: red;
+    }
+
+    #chart {
+      height: 350px;
+    }
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    .highlight {
+      visibility: hidden;
+    }
+    .highlight line {
+      shape-rendering: crispEdges;
+      opacity: 0.4;
+    }
+    .highlight circle {
+      opacity: 0.6;
+    }
+    .tick line {
+      opacity: 0.2;
+    }
+    .x.axis path {
+      display: none;
+    }
+    .line {
+      fill: none;
+      stroke-width: 1.5px;
+      shape-rendering: auto;
+    }
+    .overlay {
+      fill: none;
+      pointer-events: all;
+    }
+
+    #legend ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    #legend li {
+      font-weight: bold;
+      position: relative;
+    }
+    #legend li .remove {
+      position: absolute;
+      display: block;
+      width: 20px;
+      top: 1px;
+      left: -20px;
+      font-weight: normal;
+      cursor: pointer;
+      opacity: 0.4;
+    }
+    #legend li:hover .remove {
+      opacity: 1.0;
+    }
+    #legend li span.current-value {
+      color: black;
+      font-weight: normal;
+    }
+  </style>
 <% end %>
 
 <% content_for :script do %>
-<script type="text/javascript" src="<%= google_charts_src %>"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-<script type="text/javascript">
-google.setOnLoadCallback(drawChart);
-
-function drawChart() {
-  var initialData = new google.visualization.DataTable(<%= @data_table.as_json.to_json %>);
-
-  var formatter = new google.visualization.NumberFormat({negativeParens: false});
-  formatter.format(initialData, 1); // Apply formatter to global_ppi column (2nd)
-
-  var chart = new google.visualization.ChartWrapper({
-    chartType: "LineChart",
-    containerId: "bitcoinppi-global-chart",
-    options: {
-      chartArea: { width: "90%", height: "90%" },
-      hAxis: { slantedText: false },
-      legend: { position: "none" },
-      focusTarget: "category",
-      crosshair: {
-        trigger: "both",
-        orientation: "vertical",
-        opacity: "0.5"
-      }
-    }
-  });
-
-  var dashboard = new google.visualization.Dashboard(document.getElementById("bitcoinppi-global-dashboard"));
-  var rangeFilter = new google.visualization.ControlWrapper({
-    controlType: "google.visualization.ChartRangeFilter",
-    containerId: "bitcoinppi-global-filter-control",
-    options: {
-      filterColumnIndex: 0,
-      ui: {
-        chartType: "LineChart",
-        chartOptions: {
-          curveType: "function",
-          chartArea: { width: "90%", height: "100%" },
-          hAxis: {
-            baselineColor: "none"
-          }
-        },
-        minRangeSize: <%= @timeseries.tick_in_seconds %>
-      }
-    }
-  });
-  dashboard.bind(rangeFilter, chart);
-  dashboard.draw(initialData);
-};
-
-$(function(){
-  var form = $("#timeframe-form");
-
-  function updateDateRange(from, to) {
-    from = from.format("YYYY-MM-DD HH:00");
-    to = to.format("YYYY-MM-DD HH:00")
-    form.find("input[name=from]").val(from);
-    form.find("input[name=to]").val(to);
-    $("#daterangepicker .display").text(from + " - " + to);
-  };
-
-  $("#daterangepicker").daterangepicker({
-    timePicker: true,
-    timePicker24Hour: true,
-    minDate: "2011-07-01",
-    opens: "center",
-    locale: {
-      format: "YYYY-MM-DD HH:00"
-    },
-    startDate: '<%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %>',
-    endDate: '<%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>',
-    ranges: {
-      "24 hours": [moment().subtract(1, "day").minutes(0), moment().minutes(0)],
-      "1 week": [moment().subtract(1, "week").minutes(0), moment().minutes(0)],
-      "1 month": [moment().subtract(1, "month").minutes(0), moment().minutes(0)],
-      "year to date": [moment().startOf("year").minutes(0).hour(0), moment().minutes(0).hour(0)],
-      "max range": ["2011-07-01 00:00", moment().minutes(0).hour(0)]
-    }
-  }, function(from, to) {
-    updateDateRange(from, to);
-    form.trigger("submit");
-  });
-
-  $(window).resize(function() {
-    if (this.timer) clearTimeout(this.timer);
-    this.timer = setTimeout(function() {
-      $(window).trigger("resize-end");
-    }, 100);
-  });
-
-  $(window).on("resize-end", function() {
-    drawChart();
-  });
-
-  form.on("click", "#download-csv", function(event) {
-    event.preventDefault();
-    from = form.find("input[name=from]").val();
-    to = form.find("input[name=to]").val();
-    var url = "/v1.0/global_ppi.csv?from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to);
-    window.location.href = url;
-  });
-});
-</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+  <script type="application/json" id="data"><%= @dataset.as_json.to_json %></script>
+  <script type="application/json" id="countryNames"><%= @country_names.to_json %></script>
+  <script type="text/javascript" src="/chart.js"></script>
+  <script type="text/javascript" src="/interactivity.js"></script>
 <% end %>
 

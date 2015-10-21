@@ -103,13 +103,26 @@ module Bitcoinppi
   #         over a given timeframe
   #
   # Returns an array of hash, each representing one datum for one country per tick
-  def countries(params)
-    timeseries = Timeseries.new(params)
+  def countries(params = {})
+    timeseries = params.is_a?(Timeseries) ? params : Timeseries.new(params)
     table = :"bitcoinppi_#{timeseries.tick.sub(" ", "_")}"
     dataset = DB[table]
       .select(:time, :tick, :country, :currency, :bitcoin_price, :bigmac_price, :weight, :local_ppi, :global_ppi)
       .where(tick: timeseries.range)
       .order(Sequel.desc(:tick))
+  end
+  #
+  # Public: retrieve a series of global ppi and local ppi values per country
+  #         over a given timeframe
+  #
+  # Returns an array of hash, each representing one datum for one country per tick
+  def country_names(params = {})
+    timeseries = params.is_a?(Timeseries) ? params : Timeseries.new(params)
+    table = :"bitcoinppi_#{timeseries.tick.sub(" ", "_")}"
+    dataset = DB[table]
+      .select { distinct(country) }
+      .order(:country)
+      .map { |row| { key: row[:country], label: Country[row[:country]].name } }
   end
 
   # Public: retrieve a series of global ppi values
@@ -127,6 +140,19 @@ module Bitcoinppi
       .where(tick: timeseries.range)
       .group_by(:tick)
       .order(Sequel.desc(:tick))
+  end
+
+  def ppi(params)
+    timeseries = params.is_a?(Timeseries) ? params : Timeseries.new(params)
+    dataset = Bitcoinppi.within_timeseries(timeseries)
+      .select{[
+        bitcoinppi__tick.as(:tick),
+        country,
+        global_ppi,
+        sum(global_ppi).as(:global_ppi)
+      ]}
+      .where(rank: 1)
+      .order(:bitcoinppi__tick)
   end
 
   extend self
