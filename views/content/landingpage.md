@@ -55,7 +55,7 @@ every imaginable way. If you use it for something cool, we would love to hear ab
 
 The bitcoinppi volatility measures the average return volatility of the last 30 days of daily index changes.
 The volatility data is not provided by our API but you can easily calculate it yourself with daily index information.
-This is the formula we use to calculate the bitcoinppi volatility:
+This is the formula we use to calculate the bitcoinppi volatility
 
 `STDEV(SUM(ln(bitcoinppi(d) / bitcoinppi(d-1)) / 30) * SQRT(365) with d = 1..30`
 
@@ -87,3 +87,7 @@ Bitcoin price data is sourced from [BitcoinAverage](https://bitcoinaverage.com) 
 #### Population and GDP per capita for weights 🏢
 Data is sourced from [Trading Economics](http://www.tradingeconomics.com). Historical values for population and GDPper capita
 are not yet pulled in. Will need to be done at a later point.
+
+---
+
+<div class="fb-comments" data-href="http://bitcoinppi.com" data-width="600" data-numposts="10"></div>
