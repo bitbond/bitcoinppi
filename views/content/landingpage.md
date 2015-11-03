@@ -43,7 +43,7 @@ Note that the [bitcoinppi API](http://bitcoinppi.com/pages/api) provides all the
 every imaginable way. If you use it for something cool, we would love to hear about it in the comments! Here are a few use case ideas
 
 * Measure bitcoin's actual purchasing power instead of its price
-* Analyze bitcoin's purchasing power volatility instead of bitcoins price volatility
+* Analyze bitcoin's purchasing power volatility instead of bitcoin's price volatility
 * Use the index as a fair value measure in [bitcoin lending](https://www.bitbond.com)
 * Quote prices in your online shop in Big Macs instead of USD or other fiat currencies and accept bitcoins with ease
 
@@ -53,11 +53,12 @@ every imaginable way. If you use it for something cool, we would love to hear ab
 
 [insert volatility chart here]
 
-The bitcoinppi volatility measures the average return volatility of the last 30 days of daily index changes.
+The bitcoinppi volatility measures the average daily return volatility of of the global bitcoinppi over the last 30 days
+and expresses it as an annualized value.
 The volatility data is not provided by our API but you can easily calculate it yourself with daily index information.
 This is the formula we use to calculate the bitcoinppi volatility
 
-`STDEV(SUM(ln(bitcoinppi(d) / bitcoinppi(d-1)) / 30) * SQRT(365) with d = 1..30`
+`STDEV(ln(bitcoinppi_global(d) / bitcoinppi_global(d-1)) * SQRT(365) with d = 1..30`
 
 ---
 
@@ -73,20 +74,25 @@ where
 `weight(country_i) = (population(country_i) / SUM(population(country_i..I))) * 1/3 + (GDPperCapPPP(country_i) / SUM(GDPperCapPPP(country_i..I))) * 2/3`
 
 ### bitcoinppi data sources 💽
-To calculate the bitcoinppi we need Big Mac prices for local bitcoinppi calculations. To arrive at the global bitcoinppi
-we additionally need the population of each country that goes in the index plus the GDP per capita expressed in purchasing power parity
-for each index country.
+There are three main data sources to calculate the bitcoinppi. We need Big Mac prices, bitcoin exchange rates and macroeconomics data
+for each country that is included in the index.
 
 #### The Big Mac index of The Economist 🍔
-Big Mac prices are taken from the [Big Mac index](http://www.economist.com/content/big-mac-index) as published by The Economist.
-The Big Mac index is updated every six months. Whenever there are new prices available they will be imported into the bitcoinppi.
+The [Big Mac index](http://www.economist.com/content/big-mac-index) as published by The Economist is a great source for **local Big Mac prices.**
+The Big Mac index is updated every six months and so are the Big Mac prices that are contained in it.
+
+Note that the bitcoinppi doesn't use the actual Big Mac index itself.
+Instead we leverage the fact that the Big Mac index tracks a large number of local Big Mac prices in a
+reliable way on a regular basis. Whenever there are new prices available from the Big Mac Index they will be imported into the bitcoinppi.
 
 #### Bitcoin price data sources ฿
 Bitcoin price data is sourced from [BitcoinAverage](https://bitcoinaverage.com) and [bitcoincharts](http://www.bitcoincharts.com/).
+We only use prices of local markets that are available to consumers who buy and sell bitcoins in those markets.
 
 #### Population and GDP per capita for weights 🏢
-Data is sourced from [Trading Economics](http://www.tradingeconomics.com). Historical values for population and GDPper capita
-are not yet pulled in. Will need to be done at a later point.
+Macroeconomic data is sourced from [Trading Economics](http://www.tradingeconomics.com). Historical values for population and GDP per capita
+are not yet included. We will update the data in the next weeks. Please note that the index will recalculate based on a different
+set of historical macro data and will therefore likely change.
 
 ---
 
