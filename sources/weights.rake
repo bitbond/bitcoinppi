@@ -11,7 +11,7 @@ namespace :sources do
     table.each do |date, *data|
       data.each_with_index do |weight, index|
         country = Country.find_country_by_name(countries[index]) or raise "Could not find country: #{countries[index]}"
-        country = country.name
+        country = country.alpha2
         begin
           DB[:weights].insert(country: country, time: DateTime.parse(date), weight: weight)
           puts "created #{country} for #{date} with #{weight}"

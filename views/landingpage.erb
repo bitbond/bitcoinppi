@@ -21,8 +21,8 @@
     <div class="form-group" style="cursor: pointer">
       <div id="daterangepicker" class="input-group">
         <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
-        <div class="form-control" style="width: 265px">
-          <%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %> - <%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>
+        <div class="form-control display">
+          <%= @timeseries.from_truncated.strftime("%Y-%m-%d") %> - <%= @timeseries.to_truncated.strftime("%Y-%m-%d") %>
         </div>
       </div>
 
@@ -91,20 +91,18 @@ $(function(){
   var form = $("#timeframe-form");
 
   function updateDateRange(from, to) {
-    from = from.format("YYYY-MM-DD hh:mm");
-    to = to.format("YYYY-MM-DD hh:mm")
-    form.find("input[name=from]").val(from);
-    form.find("input[name=to]").val(to);
-    $("#daterangepicker .display").text(from + " - " + to);
+    form.find("input[name=from]").val(from.format("YYYY-MM-DD HH:00"));
+    form.find("input[name=to]").val(to.format("YYYY-MM-DD HH:00"));
+    $("#daterangepicker .display").text(from.format("YYYY-MM-DD") + " - " + to.format("YYYY-MM-DD"));
   };
 
   $("#daterangepicker").daterangepicker({
     timePicker: true,
     timePicker24Hour: true,
-    minDate: "07/01/2011",
+    minDate: "2011-07-01",
     opens: "center",
     locale: {
-      format: "YYYY-MM-DD hh:mm"
+      format: "YYYY-MM-DD"
     },
     startDate: '<%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %>',
     endDate: '<%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>',
