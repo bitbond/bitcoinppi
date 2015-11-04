@@ -46,7 +46,6 @@ class Timeseries
     ticks -= ["1 hour"] if interval >= 1.week
     ticks -= ["6 hours"] if interval >= 1.month
     ticks -= ["12 hours"] if interval >= 3.months
-    ticks -= ["1 day"] if interval > 2.years
     ticks
   end
 
@@ -131,6 +130,14 @@ class Timeseries
     eval(tick.sub(" ", "."))
   end
 
+  # Public: Set a different (but valid) tick size
+  #
+  # Raises Invalid on invalid ticks
+  def tick=(new_tick)
+    ensure_valid_tick(new_tick)
+    @tick = new_tick
+  end
+
   private
 
   def parse(string)
@@ -142,7 +149,7 @@ class Timeseries
     raise Invalid, "negative interval" if interval.to_i < 0
   end
 
-  def ensure_valid_tick
+  def ensure_valid_tick(tick = @tick)
     return if valid_ticks.include?(tick)
     raise Invalid, "tick out of bounds (interval: #{interval}, allowed ticks: #{valid_ticks.to_sentence})"
   end

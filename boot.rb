@@ -2,6 +2,7 @@ ENV["RACK_ENV"] ||= "development"
 require "bundler"
 require "yaml"
 require "json"
+require "csv"
 Bundler.setup
 require "pg"
 require "sequel"

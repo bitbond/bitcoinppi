@@ -7,7 +7,6 @@ require "sinatra/respond_with"
 require "tilt/erb"
 require "tilt/rdiscount"
 require "newrelic_rpm" if settings.production?
-require "csv"
 
 helpers do
   def handle_versioning
@@ -76,6 +75,7 @@ end
 
 get "/" do
   @timeseries = Timeseries.new(params)
+  @timeseries.tick = "7 days" if @timeseries.interval >= 2.years
   dataset = Bitcoinppi.global_ppi(@timeseries)
   @data_table = DataTable.new(dataset)
   @data_table.set_column(:tick, label: "Time", type: "date") { |tick| "Date(%s, %s, %s, %s, %s)" % [tick.year, tick.month - 1, tick.day, tick.hour, tick.min] }

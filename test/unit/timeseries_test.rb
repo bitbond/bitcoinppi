@@ -133,5 +133,14 @@ describe Timeseries do
     end
   end
 
+  describe "#tick=" do
+    it "should raise Timeseries::Invalid on ticks other than allowed within the given interval" do
+      timeseries = Timeseries.new(from: "2011-07-01", to: DateTime.now)
+      assert_raises(Timeseries::Invalid) { timeseries.tick = "15 minutes" }
+      assert_raises(Timeseries::Invalid) { timeseries.tick = "foogarbl" }
+      assert_raises(Timeseries::Invalid) { timeseries.tick = "3 days" }
+    end
+  end
+
 end
 
