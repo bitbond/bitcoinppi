@@ -25,4 +25,15 @@ describe Util do
       CSV
     end
   end
+
+  describe "::csv_value" do
+    it "should default converting the given object to_s" do
+      assert_equal "", Util.csv_value(nil)
+      assert_equal "[1, 2]", Util.csv_value([1, 2])
+    end
+
+    it "should convert Time, DateTime with a special format" do
+      assert_equal "2011-07-01 12:00:00", Util.csv_value(DateTime.parse("2011-07-01 12:00"))
+    end
+  end
 end

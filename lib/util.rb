@@ -21,8 +21,31 @@ module Util
     CSV.generate do |csv|
       csv << headers
       array.each do |hash|
-        csv << headers.map { |key| hash[key] }
+        csv << headers.map { |key| csv_value(hash[key]) }
       end
+    end
+  end
+
+  # Public: Transform a given value to a string for csv output.
+  #         Biased by our own csv output, used in conjunction with Util::array_of_hashes_to_csv.
+  #
+  # value - The value to transform.
+  #
+  # Examples
+  #
+  #   Util.csv_value(Time.now)
+  #   # => "2015-11-04 19:51:14"
+  #
+  #   Util.csv_value("foo")
+  #   # => "foo"
+  #
+  # Returns a string
+  def csv_value(value)
+    case value
+    when DateTime, Time
+      value.strftime("%Y-%m-%d %H:%M:%S")
+    else
+      value.to_s
     end
   end
 
