@@ -4,6 +4,45 @@ module Bitcoinppi
   # Public: refresh the materialized view
   def refresh
     DB.refresh_view(:bitcoinppi)
+    refresh_tick_tables
+  end
+
+  def refresh_tick_tables
+    now = Time.now
+    (2011..now.year).each do |year|
+      from = DateTime.new(year, 1, 1)
+      to = from.end_of_year
+      Timeseries::VALID_TICKS.each do |tick|
+        name = tick.sub(" ", "_")
+        parent_table = :"bitcoinppi_#{name}"
+        DB.create_table?(parent_table) do
+          column :time,          "timestamptz",    null: false
+          column :tick,          "timestamptz",    null: false
+          column :country,       "varchar(255)",   null: false
+          column :currency,      "char(3)",        null: false
+          column :source,        "varchar(255)"
+          column :bitcoin_price, "numeric(10, 2)", null: false
+          column :bigmac_price,  "numeric(10, 2)", null: false
+          column :weight,        "numeric(7, 6)"
+          column :local_ppi,     "numeric(14, 6)", null: false
+          column :global_ppi,    "numeric(14, 6)", null: false
+
+          primary_key [:country, :tick]
+          index :currency
+        end
+        table = :"#{parent_table}_#{year}"
+        DB.create_table?(table, inherits: parent_table) do
+          constraint(:by_year, tick: from..to)
+        end
+        from = DB[table].order(Sequel.desc(:tick)).get(:tick) || from
+        timeseries = Timeseries.new(from: from, to: to, tick: tick)
+        next if timeseries.interval < timeseries.tick_in_seconds
+        dataset = Bitcoinppi.within_timeseries(timeseries)
+          .select(:time, :tick, :country, :currency, :source, :bitcoin_price, :bigmac_price, :weight, :local_ppi, :global_ppi)
+          .where(rank: 1)
+        DB[table].insert(dataset)
+      end
+    end
   end
 
   # Public: creates a dataset with a common table expression of itself, joined with the given timeseries table
@@ -25,6 +64,7 @@ module Bitcoinppi
             (Sequel.qualify(bitcoinppi, :time) >= Sequel.qualify(series, :tick)) &
             (Sequel.qualify(bitcoinppi, :time) < Sequel.qualify(series, :tick_end))
           end
+          .where { Sequel.qualify(bitcoinppi, :time) < timeseries.to }
       )
   end
 
@@ -46,7 +86,6 @@ module Bitcoinppi
   def spot_countries
     now = DateTime.now
     hash_groups = countries(from: now - 24.hours, to: now, tick: "15 minutes")
-      .select_append { avg(:global_ppi).over(partition: :country, order: Sequel.desc(:bitcoinppi__time), frame: :all).as(:avg_24h_global_ppi) }
       .select_append { avg(:local_ppi).over(partition: :country, order: Sequel.desc(:bitcoinppi__time), frame: :all).as(:avg_24h_local_ppi) }
       .to_hash_groups(:country)
     hash_groups.each { |country, data| hash_groups[country] = data.first }
@@ -59,10 +98,9 @@ module Bitcoinppi
   # Returns an array of hash, each representing one datum for one country per tick
   def countries(params)
     timeseries = Timeseries.new(params)
-    dataset = Bitcoinppi.within_timeseries(timeseries)
-      .select(:time, :tick, :country, :currency, :bitcoin_price, :bigmac_price, :weight, :local_ppi, :global_ppi)
-      .where(rank: 1)
-      .order(Sequel.desc(:time))
+    dataset = DB[:"bitcoinppi_#{timeseries.tick.sub(" ", "_")}"]
+      .where(tick: timeseries.from..timeseries.to)
+      .order(Sequel.desc(:tick))
   end
 
   # Public: retrieve a series of global ppi values

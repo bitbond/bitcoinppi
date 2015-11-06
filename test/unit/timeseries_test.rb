@@ -34,6 +34,21 @@ describe Timeseries do
       assert_equal "1 day", Timeseries.new.tick
     end
 
+    it "should raise Timeseries::Invalid on date older than 2011-07-01" do
+      assert_raises(Timeseries::Invalid) { Timeseries.new(from: "2011-06-30").validate! }
+    end
+
+    it "should raise Timeseries::Invalid on times younger than now" do
+      assert_raises(Timeseries::Invalid) { Timeseries.new(to: 1.day.from_now).validate! }
+    end
+
+    it "should raise Timeseries::Invalid on a negative interval" do
+      now = DateTime.now
+      assert_raises(Timeseries::Invalid) { Timeseries.new(from: now, to: now - 1.day).validate! }
+    end
+  end
+
+  describe "#validate!" do
     it "should allow custom ticks within a given interval" do
       now = DateTime.now
       [
@@ -51,28 +66,16 @@ describe Timeseries do
         ticks = Timeseries.valid_ticks(interval)
         ticks.each do |tick|
           timeframe = Timeseries.new(from: now - interval, to: now, tick: tick)
+          timeframe.validate!
           assert_equal tick, timeframe.tick
         end
       end
     end
 
     it "should raise Timeseries::Invalid on ticks other than allowed within the given interval" do
-      assert_raises(Timeseries::Invalid) { Timeseries.new(from: "2011-07-01", to: DateTime.now, tick: "15 minutes") }
-      assert_raises(Timeseries::Invalid) { Timeseries.new(tick: "foogarbl") }
-      assert_raises(Timeseries::Invalid) { Timeseries.new(tick: "3 days") }
-    end
-
-    it "should raise Timeseries::Invalid on date older than 2011-07-01" do
-      assert_raises(Timeseries::Invalid) { Timeseries.new(from: "2011-06-30") }
-    end
-
-    it "should raise Timeseries::Invalid on times younger than now" do
-      assert_raises(Timeseries::Invalid) { Timeseries.new(to: 1.day.from_now) }
-    end
-
-    it "should raise Timeseries::Invalid on a negative interval" do
-      now = DateTime.now
-      assert_raises(Timeseries::Invalid) { Timeseries.new(from: now, to: now - 1.day) }
+      assert_raises(Timeseries::Invalid) { Timeseries.new(from: "2011-07-01", to: DateTime.now, tick: "15 minutes").validate! }
+      assert_raises(Timeseries::Invalid) { Timeseries.new(tick: "foogarbl").validate! }
+      assert_raises(Timeseries::Invalid) { Timeseries.new(tick: "3 days").validate! }
     end
   end
 
@@ -130,15 +133,6 @@ describe Timeseries do
       1.upto(24) do |i|
         assert_equal today + i.hour, dataset.all[i-1][:tick_end]
       end
-    end
-  end
-
-  describe "#tick=" do
-    it "should raise Timeseries::Invalid on ticks other than allowed within the given interval" do
-      timeseries = Timeseries.new(from: "2011-07-01", to: DateTime.now)
-      assert_raises(Timeseries::Invalid) { timeseries.tick = "15 minutes" }
-      assert_raises(Timeseries::Invalid) { timeseries.tick = "foogarbl" }
-      assert_raises(Timeseries::Invalid) { timeseries.tick = "3 days" }
     end
   end
 

@@ -9,9 +9,7 @@ class Timeseries
     "7 days",
     "1 day",
     "12 hours",
-    "6 hours",
     "1 hour",
-    "30 minutes",
     "15 minutes"
   ].freeze
 
@@ -42,14 +40,14 @@ class Timeseries
   # Returns an array of strings representing available ticks for the given interval.
   def self.valid_ticks(interval)
     ticks = VALID_TICKS
-    ticks -= ["15 minutes", "30 minutes"] if interval > 3.days
+    ticks -= ["15 minutes"] if interval > 3.days
     ticks -= ["1 hour"] if interval >= 1.week
-    ticks -= ["6 hours"] if interval >= 1.month
     ticks -= ["12 hours"] if interval >= 3.months
     ticks
   end
 
   attr_reader :from, :to, :tick
+  attr_writer :tick
 
   # Public: initialize a new Timeseries object, defaults to 1 year up until now
   #
@@ -77,6 +75,12 @@ class Timeseries
     @to = to ? parse(to) : now
     @tick = tick || valid_ticks.last
     ensure_within_bounds
+  end
+
+  # Public: validates from, to and tick values. Use before executing a timeseries from user input.
+  #
+  # Raises Timeseries::Invalid if tick is invalid
+  def validate!
     ensure_valid_tick
   end
 
@@ -128,14 +132,6 @@ class Timeseries
   def tick_in_seconds
     return unless VALID_TICKS.include?(tick)
     eval(tick.sub(" ", "."))
-  end
-
-  # Public: Set a different (but valid) tick size
-  #
-  # Raises Invalid on invalid ticks
-  def tick=(new_tick)
-    ensure_valid_tick(new_tick)
-    @tick = new_tick
   end
 
   private

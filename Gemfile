@@ -9,6 +9,7 @@ gem "activesupport"
 gem "whenever"
 gem "rdiscount"
 gem "countries"
+gem "timeliness"
 
 group :test do
   gem "mocha"

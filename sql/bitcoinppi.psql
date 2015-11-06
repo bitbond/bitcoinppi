@@ -26,7 +26,8 @@ SELECT
   bigmac_prices.price AS bigmac_price,
   weights.weight AS weight,
   bitcoin_prices.price / bigmac_prices.price AS local_ppi,
-  bitcoin_prices.price / bigmac_prices.price * COALESCE(weights.weight, 1) AS global_ppi
+  bitcoin_prices.price / bigmac_prices.price * COALESCE(weights.weight, 1) AS global_ppi,
+  bitcoin_prices.source AS source
 FROM bitcoin_prices
 JOIN bigmac_prices ON
   bigmac_prices.currency = bitcoin_prices.currency AND

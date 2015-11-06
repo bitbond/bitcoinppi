@@ -16,11 +16,11 @@ class DateTimeWithInfinity < DateTime
   #   DateTimeWithInfinity.parse("2011-07-01")
   #   # => Fri, 01 Jul 2011 00:00:00 +0000
   #
-  # Returns a DateTime or DateTime::Infnity object
+  # Returns a DateTime or DateTime::Infinity object
   def self.parse(string)
     return DateTime::Infinity.new if string == "infinity"
     return DateTime::Infinity.new(-1) if string == "-infinity"
-    DateTime.parse(string)
+    Timeliness.parse(string, :datetime)
   end
 
 end
