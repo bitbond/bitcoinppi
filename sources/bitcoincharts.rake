@@ -5,12 +5,13 @@ namespace :sources do
     require "json"
     require "open-uri"
 
+    currencies = ["INR", "HKD", "JPY", "DKK", "CZK", "TRY", "PKR", "MYR", "CLP", "ARS", "THB", "PHP", "COP"]
     body = open("http://api.bitcoincharts.com/v1/weighted_prices.json").read
     json = JSON.parse(body)
 
     time = Time.at(json["timestamp"])
     values = json.map do |currency, data|
-      next unless Config["currencies"].include?(currency)
+      next unless currencies.include?(currency)
       next unless price = data["24h"]
       [currency, time, price, "bitcoincharts"]
     end.compact

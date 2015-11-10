@@ -5,11 +5,12 @@ namespace :sources do
     require "json"
     require "open-uri"
 
+    currencies = %w[AUD BRL CAD CHF CNY EUR GBP IDR ILS MXN NOK NZD PLN RON RUB SEK SGD USD ZAR]
     body = open("https://api.bitcoinaverage.com/ticker/all").read
     json = JSON.parse(body)
 
     values = json.map do |currency, data|
-      next unless Config["currencies"].include?(currency)
+      next unless currencies.include?(currency)
       [currency, data["timestamp"], data["last"], "bitcoinaverage"]
     end.compact
     DB[:bitcoin_prices].import([:currency, :time, :price, :source], values)

@@ -16,7 +16,8 @@ namespace :sources do
           DB[:weights].insert(country: country, time: DateTime.parse(date), weight: weight)
           puts "created #{country} for #{date} with #{weight}"
         rescue Sequel::UniqueConstraintViolation
-          puts "already seen #{country} for #{date}"
+          DB[:weights].where(country: country, time: DateTime.parse(date)).update(weight: weight)
+          puts "updating #{country} for #{date}"
         rescue => e
           puts "exception raised #{country} for #{date} with #{weight} #{e.class.name} #{e.message}"
         end
