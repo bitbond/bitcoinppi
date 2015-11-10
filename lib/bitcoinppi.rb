@@ -34,6 +34,7 @@ module Bitcoinppi
           primary_key [:country, :tick]
         end
         from = DB[table].order(Sequel.desc(:tick)).get(:tick) || from
+        to = to > now ? now : to
         timeseries = Timeseries.new(from: from, to: to, tick: tick)
         next if timeseries.interval < timeseries.tick_in_seconds
         dataset = Bitcoinppi.within_timeseries(timeseries)
