@@ -22,7 +22,6 @@ SELECT
   bitcoin_prices.time AS time,
   bigmac_prices.country AS country,
   bitcoin_prices.currency AS currency,
-  bitcoin_prices.source AS source,
   bitcoin_prices.price AS bitcoin_price,
   bigmac_prices.price AS bigmac_price,
   weights.weight AS weight,

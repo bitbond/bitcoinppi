@@ -2,7 +2,7 @@ require_relative "../test_helper.rb"
 
 describe "api" do
 
-  let(:today) { DateTime.now.beginning_of_day }
+  let(:today) { DateTime.now.utc.beginning_of_day }
   let(:yesterday) { today - 1.day }
   let(:last_year) { today - 1.year }
 
@@ -178,7 +178,7 @@ describe "api" do
         assert yesterday <= tick
         assert tick <= today
       end
-      assert_equal 4, json_response[:countries].size
+      assert_equal 6, json_response[:countries].size
     end
 
     it "should handle invalid timeframes" do
@@ -241,7 +241,7 @@ describe "api" do
         assert yesterday <= tick
         assert tick <= today
       end
-      assert_equal 2, json_response[:Germany].size
+      assert_equal 3, json_response[:Germany].size
     end
 
     it "should handle invalid timeframes" do

@@ -70,7 +70,7 @@ class Timeseries
   def initialize(params = {})
     from, to, tick = params.stringify_keys.values_at("from", "to", "tick")
     tick = tick.blank? ? nil : tick
-    now = DateTime.now
+    now = DateTime.now.utc
     @from = from ? parse(from) : now - 1.year
     @to = to ? parse(to) : now
     @tick = tick || valid_ticks.last
@@ -96,6 +96,13 @@ class Timeseries
   # Returns the interval of from and to in seconds.
   def interval
     @to.to_i - @from.to_i
+  end
+
+  # Public
+  #
+  # Returns a Range from_truncated..to_truncated
+  def range
+    from_truncated..to_truncated
   end
 
   # Public

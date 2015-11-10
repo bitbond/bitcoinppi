@@ -12,6 +12,8 @@ require_relative "../test_helper.rb"
 # As long as this application has this simple set of request parameters, this cache key will be sufficient.
 describe "caching" do
 
+  before { Bitcoinppi.refresh }
+
   it "should allow to cache everything for 15 minutes" do
     %w[
       /
