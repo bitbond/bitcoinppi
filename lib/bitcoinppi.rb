@@ -12,7 +12,7 @@ module Bitcoinppi
     (2011..now.year).each do |year|
       from = DateTime.new(year, 1, 1).utc
       from = from < Timeseries::OLDEST ? Timeseries::OLDEST : from
-      to = from.end_of_year
+      to = from.end_of_year.end_of_day
       Timeseries::VALID_TICKS.each do |tick|
         name = tick.sub(" ", "_")
         parent_table = :"bitcoinppi_#{name}"
