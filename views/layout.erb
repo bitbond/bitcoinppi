@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="">
   <%= yield_content :head %>
   <style>
+    body {
+      padding-top: 70px;
+    }
     .container-fluid {
       max-width: 960px;
     }
@@ -19,7 +22,7 @@
 </head>
 <body>
 
-<div class="navbar navbar-default">
+<div class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">
