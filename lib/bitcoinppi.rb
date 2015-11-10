@@ -27,13 +27,11 @@ module Bitcoinppi
           column :weight,        "numeric(7, 6)"
           column :local_ppi,     "numeric(14, 6)", null: false
           column :global_ppi,    "numeric(14, 6)", null: false
-
-          primary_key [:country, :tick]
-          index :currency
         end
         table = :"#{parent_table}_#{year}"
         DB.create_table?(table, inherits: parent_table) do
           constraint(:by_year, tick: from..to)
+          primary_key [:country, :tick]
         end
         from = DB[table].order(Sequel.desc(:tick)).get(:tick) || from
         timeseries = Timeseries.new(from: from, to: to, tick: tick)
