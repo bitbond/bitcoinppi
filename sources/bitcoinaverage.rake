@@ -5,7 +5,7 @@ namespace :sources do
     require "json"
     require "open-uri"
 
-    currencies = %w[AUD BRL CAD CHF CNY EUR GBP IDR ILS MXN NOK NZD PLN RON RUB SEK SGD USD ZAR]
+    currencies = %w[AUD BRL CAD CHF CNY EUR GBP IDR ILS MXN NOK NZD PLN RON RUB SEK SGD USD ZAR HKD JPY]
     body = open("https://api.bitcoinaverage.com/ticker/all").read
     json = JSON.parse(body)
 
