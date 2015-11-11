@@ -17,8 +17,8 @@ $(function(){
     locale: {
       format: "YYYY-MM-DD HH:00"
     },
-    startDate: '<%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %>',
-    endDate: '<%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>',
+    startDate: form.find("input[name=from]").val(),
+    endDate: form.find("input[name=to]").val(),
     ranges: {
       "24 hours": [moment().subtract(1, "day").minutes(0), moment().minutes(0)],
       "1 week": [moment().subtract(1, "week").minutes(0), moment().minutes(0)],
