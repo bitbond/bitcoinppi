@@ -34,7 +34,7 @@ helpers do
 
   def page_title
     title = yield_content(:title).blank? ? nil : yield_content(:title)
-    title ||= Config["pages"][request.path.sub("/pages", "")]
+    title ||= Config["pages"][request.path.sub("/pages/", "")]
     title || "Bitcoinppi – Bitcoin purchasing power index"
   end
 
