@@ -42,8 +42,8 @@ describe "api" do
     )
   end
 
-  describe "GET /v1.0/spot" do
-    before { get "/v1.0/spot" }
+  describe "GET /v1.1/spot" do
+    before { get "/v1.1/spot" }
 
     it "should respond with 200" do
       assert_equal 200, last_response.status
@@ -77,19 +77,19 @@ describe "api" do
     end
   end
 
-  describe "GET /v1.0/global_ppi" do
+  describe "GET /v1.1/global_ppi" do
     it "should respond with 200" do
-      get "/v1.0/global_ppi"
+      get "/v1.1/global_ppi"
       assert_equal 200, last_response.status
     end
 
     it "should respond with json by default" do
-      get "/v1.0/global_ppi"
+      get "/v1.1/global_ppi"
       assert_equal "application/json", last_response["content-type"]
     end
 
     it "should be well structured" do
-      get "/v1.0/global_ppi"
+      get "/v1.1/global_ppi"
       assert_structure({
         global_ppi: [
           {
@@ -101,7 +101,7 @@ describe "api" do
     end
 
     it "should return one entry each day from within last year by default" do
-      get "/v1.0/global_ppi"
+      get "/v1.1/global_ppi"
       json_response[:global_ppi].each do |hash|
         tick = DateTime.parse(hash[:tick])
         assert last_year <= tick
@@ -110,7 +110,7 @@ describe "api" do
     end
 
     it "should accept a different time frame" do
-      get "/v1.0/global_ppi", from: f(yesterday), to: f(today)
+      get "/v1.1/global_ppi", from: f(yesterday), to: f(today)
       json_response[:global_ppi].each do |hash|
         tick = DateTime.parse(hash[:tick])
         assert yesterday <= tick
@@ -119,7 +119,7 @@ describe "api" do
     end
 
     it "should handle invalid timeframes" do
-      get "/v1.0/global_ppi", from: "foogarbl", to: f(today)
+      get "/v1.1/global_ppi", from: "foogarbl", to: f(today)
       assert_equal 400, last_response.status
       assert_structure({
         error: /could not parse datestring/
@@ -127,7 +127,7 @@ describe "api" do
     end
 
     it "should respond with a csv download if requested" do
-      get "/v1.0/global_ppi.csv"
+      get "/v1.1/global_ppi.csv"
       assert_equal "text/csv;charset=utf-8", last_response["content-type"]
       header, *rows = CSV.parse(last_response.body)
       assert_equal %w[tick global_ppi], header
@@ -135,14 +135,14 @@ describe "api" do
     end
   end
 
-  describe "GET /v1.0/countries" do
+  describe "GET /v1.1/countries" do
     it "should respond with 200" do
-      get "/v1.0/countries"
+      get "/v1.1/countries"
       assert_equal 200, last_response.status
     end
 
     it "should be well structured" do
-      get "/v1.0/countries"
+      get "/v1.1/countries"
       assert_structure({
         countries: [
           {
@@ -162,7 +162,7 @@ describe "api" do
     end
 
     it "should return one entry each day for each country from within last year by default" do
-      get "/v1.0/countries"
+      get "/v1.1/countries"
       json_response[:countries].each do |hash|
         tick = DateTime.parse(hash[:tick])
         assert last_year <= tick
@@ -172,7 +172,7 @@ describe "api" do
     end
 
     it "should accept a different time frame" do
-      get "/v1.0/countries", from: f(yesterday), to: f(today), tick: "1 hour"
+      get "/v1.1/countries", from: f(yesterday), to: f(today), tick: "1 hour"
       json_response[:countries].each do |hash|
         tick = DateTime.parse(hash[:tick])
         assert yesterday <= tick
@@ -182,7 +182,7 @@ describe "api" do
     end
 
     it "should handle invalid timeframes" do
-      get "/v1.0/countries", from: "foogarbl", to: f(today)
+      get "/v1.1/countries", from: "foogarbl", to: f(today)
       assert_equal 400, last_response.status
       assert_structure({
         error: /could not parse datestring/
@@ -190,7 +190,7 @@ describe "api" do
     end
 
     it "should respond with a csv download if requested" do
-      get "/v1.0/countries.csv"
+      get "/v1.1/countries.csv"
       assert_equal "text/csv;charset=utf-8", last_response["content-type"]
       header, *rows = CSV.parse(last_response.body)
       assert_equal %w[time tick country currency bitcoin_price bigmac_price weight local_ppi global_ppi], header
@@ -198,8 +198,8 @@ describe "api" do
     end
   end
 
-  describe "GET /v1.0/countries/:country" do
-    before { get "/v1.0/countries/Germany" }
+  describe "GET /v1.1/countries/:country" do
+    before { get "/v1.1/countries/Germany" }
 
     it "should respond with 200" do
       assert_equal 200, last_response.status
@@ -225,7 +225,7 @@ describe "api" do
     end
 
     it "should return one entry each day from within last year by default" do
-      get "/v1.0/countries/Germany"
+      get "/v1.1/countries/Germany"
       json_response[:Germany].each do |hash|
         tick = DateTime.parse(hash[:tick])
         assert last_year <= tick
@@ -235,7 +235,7 @@ describe "api" do
     end
 
     it "should accept a different time frame" do
-      get "/v1.0/countries/Germany", from: f(yesterday), to: f(today), tick: "1 hour"
+      get "/v1.1/countries/Germany", from: f(yesterday), to: f(today), tick: "1 hour"
       json_response[:Germany].each do |hash|
         tick = DateTime.parse(hash[:tick])
         assert yesterday <= tick
@@ -245,7 +245,7 @@ describe "api" do
     end
 
     it "should handle invalid timeframes" do
-      get "/v1.0/countries/Germany", from: "foogarbl", to: f(today)
+      get "/v1.1/countries/Germany", from: "foogarbl", to: f(today)
       assert_equal 400, last_response.status
       assert_structure({
         error: /could not parse datestring/
@@ -253,7 +253,7 @@ describe "api" do
     end
 
     it "should respond with a csv download if requested" do
-      get "/v1.0/countries/Germany.csv"
+      get "/v1.1/countries/Germany.csv"
       assert_equal "text/csv;charset=utf-8", last_response["content-type"]
       header, *rows = CSV.parse(last_response.body)
       assert_equal %w[time tick country currency bitcoin_price bigmac_price weight local_ppi global_ppi], header

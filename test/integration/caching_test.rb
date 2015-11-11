@@ -17,13 +17,13 @@ describe "caching" do
   it "should allow to cache everything for 15 minutes" do
     %w[
       /
-      /v1.0/spot
-      /v1.0/global_ppi
-      /v1.0/countries
-      /v1.0/countries/Germany
-      /v1.0/global_ppi.csv
-      /v1.0/countries.csv
-      /v1.0/countries/Germany.csv
+      /v1.1/spot
+      /v1.1/global_ppi
+      /v1.1/countries
+      /v1.1/countries/Germany
+      /v1.1/global_ppi.csv
+      /v1.1/countries.csv
+      /v1.1/countries/Germany.csv
       /pages/api
     ].each do |path|
       get path
@@ -34,13 +34,13 @@ describe "caching" do
   it "should omit cache headers if bypass_caches param is set" do
     %w[
       /
-      /v1.0/spot
-      /v1.0/global_ppi
-      /v1.0/countries
-      /v1.0/countries/Germany
-      /v1.0/global_ppi.csv
-      /v1.0/countries.csv
-      /v1.0/countries/Germany.csv
+      /v1.1/spot
+      /v1.1/global_ppi
+      /v1.1/countries
+      /v1.1/countries/Germany
+      /v1.1/global_ppi.csv
+      /v1.1/countries.csv
+      /v1.1/countries/Germany.csv
       /pages/api
     ].each do |path|
       get path, bypass_caches: true
@@ -50,13 +50,13 @@ describe "caching" do
 
   it "should respond with 406 (Not Acceptable) for text/csv requests without .csv extension" do
     header "Accept", "text/csv"
-    get "/v1.0/countries"
+    get "/v1.1/countries"
     assert_equal 406, last_response.status
   end
 
   it "should respond with 406 (Not Acceptable) for requests with .csv extension but with incorrect Accept header" do
     header "Accept", "application/json"
-    get "/v1.0/countries.csv"
+    get "/v1.1/countries.csv"
     assert_equal 406, last_response.status
   end
 
