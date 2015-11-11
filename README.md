@@ -85,6 +85,17 @@ _Note: Some configurations require the database user to have a password._
 
         $ irb -r./boot.rb
 
+## Editing content
+
+* All content and pages are located in /views/content
+* Content is authored using Markdown
+* A page is accessible under the path `/pages/filename.md`
+* Pages must be listed with their `filename` (excluding the extension) and their title in `config/app.yml`:
+
+    pages:
+      filename: Title of the page
+      api: API Documentation
+
 ## Seed data
 
 * Make sure you have all prerequisites installed (see Development)
@@ -97,7 +108,6 @@ _Note: Some configurations require the database user to have a password._
 * Make sure you have all prerequisites installed (see Development)
 
 * Install crontab using `$ whenever --update-crontab` (you can read the resulting crontab using `$ whenever`)
-
 
 ## License
 

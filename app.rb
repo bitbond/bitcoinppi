@@ -33,9 +33,9 @@ helpers do
   end
 
   def page_title
-    title = yield_content(:title)
+    title = yield_content(:title).blank? ? nil : yield_content(:title)
     title ||= Config["pages"][request.path.sub("/pages", "")]
-    title || "Bitcoinppi"
+    title || "Bitcoinppi – Bitcoin purchasing power index"
   end
 
   def dataset_response(key, dataset)
