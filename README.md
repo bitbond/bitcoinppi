@@ -8,7 +8,7 @@ See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/
 
 **Example:**
 
-    curl http://bitcoinppi.com/v1.0/spot
+    curl http://bitcoinppi.com/v1.1/spot
 
 **Response:**
 
@@ -26,6 +26,7 @@ See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/
       },
       "countries": {
         "CN": {
+          "tick": "2015-10-15T10:30:00.000+02:00",
           "time": "2015-10-15T10:44:12.000+02:00",
           "country": "CN",
           "currency": "CNY",
@@ -33,13 +34,11 @@ See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/
           "bigmac_price": "17.0",
           "weight": "0.1",
           "local_ppi": "97.1852941176470588",
-          "global_ppi": "9.71852941176470588",
-          "tick": "2015-10-15T10:30:00.000+02:00",
-          "avg_24h_global_ppi": "9.626111182934712347",
           "avg_24h_local_ppi": "96.2611118293471235"
         },
         ...
         "US": {
+          "tick": "2015-10-15T10:30:00.000+02:00",
           "time": "2015-10-15T10:44:12.000+02:00",
           "country": "US",
           "currency": "USD",
@@ -47,9 +46,6 @@ See [API documentation](https://github.com/bitbond/bitcoinppi/blob/master/views/
           "bigmac_price": "4.79",
           "weight": "0.05",
           "local_ppi": "53.2484342379958246",
-          "global_ppi": "2.66242171189979123",
-          "tick": "2015-10-15T10:30:00.000+02:00",
-          "avg_24h_global_ppi": "2.660231939250728395",
           "avg_24h_local_ppi": "53.2046387850145679"
         }
       }   
