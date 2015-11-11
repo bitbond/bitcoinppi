@@ -129,7 +129,7 @@ module Bitcoinppi
   #         over a given timeframe
   #
   # Returns an array of hashes, each represeting one datum per tick
-  def global_ppi(params)
+  def global_ppi(params = {})
     timeseries = params.is_a?(Timeseries) ? params : Timeseries.new(params)
     table = :"bitcoinppi_#{timeseries.tick.sub(" ", "_")}"
     dataset = DB[table]

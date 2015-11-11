@@ -57,7 +57,7 @@ $(function(){
     from = form.find("input[name=from]").val();
     to = form.find("input[name=to]").val();
     var queryString = "?from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to);
-    var url = "/v1.0/global_ppi.csv" + queryString;
+    var url = "/v1.1/global_ppi.csv" + queryString;
     window.location.href = url;
   });
 });
