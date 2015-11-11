@@ -59,9 +59,7 @@ describe "api" do
         bigmac_price: String,
         weight: String,
         local_ppi: String,
-        global_ppi: String,
         avg_24h_local_ppi: String,
-        avg_24h_global_ppi: String,
         rank: nil # exclude rank
       }
       assert_structure({
@@ -154,7 +152,6 @@ describe "api" do
             bigmac_price: String,
             weight: String,
             local_ppi: String,
-            global_ppi: String,
             rank: nil # exclude rank
           }
         ]
@@ -193,7 +190,7 @@ describe "api" do
       get "/v1.1/countries.csv"
       assert_equal "text/csv;charset=utf-8", last_response["content-type"]
       header, *rows = CSV.parse(last_response.body)
-      assert_equal %w[time tick country currency bitcoin_price bigmac_price weight local_ppi global_ppi], header
+      assert_equal %w[time tick country currency bitcoin_price bigmac_price weight local_ppi], header
       assert_equal 6, rows.size
     end
   end
@@ -217,7 +214,6 @@ describe "api" do
             bigmac_price: String,
             weight: String,
             local_ppi: String,
-            global_ppi: String,
             rank: nil # exclude rank
           }
         ]
@@ -256,7 +252,7 @@ describe "api" do
       get "/v1.1/countries/Germany.csv"
       assert_equal "text/csv;charset=utf-8", last_response["content-type"]
       header, *rows = CSV.parse(last_response.body)
-      assert_equal %w[time tick country currency bitcoin_price bigmac_price weight local_ppi global_ppi], header
+      assert_equal %w[time tick country currency bitcoin_price bigmac_price weight local_ppi], header
       assert_equal 3, rows.size
     end
   end

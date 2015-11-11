@@ -91,12 +91,6 @@ describe Bitcoinppi do
     before { Timecop.freeze(today) }
     after { Timecop.return }
 
-    it "should return the closing global ppi per country" do
-      us, de = spot_countries["United States"], spot_countries["Germany"]
-      assert_equal 8.to_d, us[:global_ppi]
-      assert_equal 1.6.to_d, de[:global_ppi]
-    end
-
     it "should return the closing local ppi per country" do
       us, de = spot_countries["United States"], spot_countries["Germany"]
       assert_equal 10.to_d, us[:local_ppi]
@@ -107,12 +101,6 @@ describe Bitcoinppi do
       us, de = spot_countries["United States"], spot_countries["Germany"]
       assert_equal 10.5.to_d, us[:avg_24h_local_ppi]
       assert_equal 9.27.to_d, de[:avg_24h_local_ppi]
-    end
-
-    it "should return the average global ppi per country" do
-      us, de = spot_countries["United States"], spot_countries["Germany"]
-      assert_equal 8.4.to_d, us[:avg_24h_global_ppi]
-      assert_equal 1.854.to_d, de[:avg_24h_global_ppi]
     end
   end
 

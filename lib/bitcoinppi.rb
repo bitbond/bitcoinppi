@@ -98,7 +98,6 @@ module Bitcoinppi
   def spot_countries
     now = DateTime.now
     hash_groups = countries(from: now - 24.hours, to: now, tick: "15 minutes")
-      .select_append { avg(:global_ppi).over(partition: :country, order: Sequel.desc(:tick), frame: :all).as(:avg_24h_global_ppi) }
       .select_append { avg(:local_ppi).over(partition: :country, order: Sequel.desc(:tick), frame: :all).as(:avg_24h_local_ppi) }
       .to_hash_groups(:country)
     hash_groups.each { |country, data| hash_groups[country] = data.first }
@@ -113,15 +112,15 @@ module Bitcoinppi
     timeseries = params.is_a?(Timeseries) ? params : Timeseries.new(params)
     table = :"bitcoinppi_#{timeseries.tick.sub(" ", "_")}"
     dataset = DB[table]
-      .select(:time, :tick, :country, :currency, :bitcoin_price, :bigmac_price, :weight, :local_ppi, :global_ppi)
+      .select(:time, :tick, :country, :currency, :bitcoin_price, :bigmac_price, :weight, :local_ppi)
       .where(tick: timeseries.range)
       .order(Sequel.desc(:tick))
   end
   #
-  # Public: retrieve a series of global ppi and local ppi values per country
+  # Public: retrieve all countries with their name
   #         over a given timeframe
   #
-  # Returns an array of hash, each representing one datum for one country per tick
+  # Returns an array of hashes, each representing one country with its name.
   def country_names(params = {})
     timeseries = params.is_a?(Timeseries) ? params : Timeseries.new(params)
     table = :"bitcoinppi_#{timeseries.tick.sub(" ", "_")}"
@@ -148,6 +147,10 @@ module Bitcoinppi
       .order(Sequel.desc(:tick))
   end
 
+  # Public: retrieve the annualized 30d daily return volatility
+  #         automatically adjusts to calculate starting from 30 days before the requested date if possible.
+  #
+  # Returns a dataset
   def annualized_30_day_return_volatility(params = {})
     timeseries = params.is_a?(Timeseries) ? params : Timeseries.new(params)
     timeseries.tick = "1 day"
