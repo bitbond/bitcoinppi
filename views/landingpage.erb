@@ -1,17 +1,31 @@
 <div class="row">
-  <%
-    open, close = @spot.values_at(:global_ppi_24h_ago, :global_ppi)
-    if open && close
-      diff = close - open
-      percent = open == 0 ? 0.0 : (diff / close * 100.0)
-      css_class = diff >= 0 ? "positive" : "negative"
-  %>
-    <h2><b><%= close.round(2) %></b> <span class="diff <%= css_class %>"><%= diff.round(2) %> (<%= percent.round(2) %>%)</span></h2>
-    <p>
-      Number of Big Macs 1 bitcoin buys you<br>
-      <%= @spot[:tick].strftime("%b %-d, %H:%M UTC") %> close and one day change
-    </p>
-  <% end %>
+  <div class="col-md-4">
+    <%
+      open, close = @spot.values_at(:global_ppi_24h_ago, :global_ppi)
+      if open && close
+        diff = close - open
+        percent = open == 0 ? 0.0 : (diff / close * 100.0)
+        css_class = diff >= 0 ? "positive" : "negative"
+    %>
+      <h2 id="current-ppi">
+        <strong><%= close.round(2) %></strong>
+        <span class="diff <%= css_class %>"><%= diff.round(2) %> (<%= percent.round(2) %>%)</span>
+      </h2>
+      <p>
+        Number of Big Macs 1 bitcoin buys you<br>
+        <%= @spot[:tick].strftime("%b %-d, %H:%M UTC") %> close and one day change
+      </p>
+    <% end %>
+  </div>
+  <!-- AddToAny BEGIN -->
+  <div class="col-md-4 a2a_kit a2a_kit_size_32 a2a_default_style">
+    <a class="a2a_button_twitter"></a>
+    <a class="a2a_button_reddit"></a>
+    <a class="a2a_button_hacker_news"></a>
+    <a class="a2a_button_facebook"></a>
+    <a class="a2a_button_google_plus"></a>
+  </div>
+  <!-- AddToAny END -->
 </div>
 
 <div class="row">
@@ -47,6 +61,9 @@
 <% content_for :head do %>
   <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
   <style>
+    #current-ppi {
+      margin: 0 0 10px 0;
+    }
     .diff {
       font-size: 70%;
       font-weight: normal;
@@ -139,5 +156,10 @@
   <script type="text/javascript" src="/ppi_chart.js"></script>
   <script type="text/javascript" src="/volatility_chart.js"></script>
   <script type="text/javascript" src="/interactivity.js"></script>
+  <script type="text/javascript">
+    var a2a_config = a2a_config || {};
+    a2a_config.linkurl = "http://bitcoinppi.com";
+  </script>
+  <script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
 <% end %>
 
