@@ -6,8 +6,11 @@
       percent = yesterday == 0 ? 0.0 : (diff / today[:global_ppi] * 100.0)
       css_class = diff >= 0 ? "positive" : "negative"
   %>
-    <h2><%= today[:global_ppi].round(2) %> <span class="diff <%= css_class %>"><%= diff.round(2) %> (<%= percent.round(2) %>%)</span></h2>
-    <p><%= today[:tick].strftime("%b %-d, %Y %H:%M UTC") %></p>
+    <h2><b><%= today[:global_ppi].round(2) %></b> <span class="diff <%= css_class %>"><%= diff.round(2) %> (<%= percent.round(2) %>%)</span></h2>
+    <p>
+      Number of Big Macs 1 bitcoin buys you<br>
+      <%= today[:tick].strftime("%b %-d, %H:%M UTC") %> close and one day change
+    </p>
   <% end %>
 </div>
 
