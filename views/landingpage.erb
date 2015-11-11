@@ -7,7 +7,7 @@
       css_class = diff >= 0 ? "positive" : "negative"
   %>
     <h2><%= today[:global_ppi].round(2) %> <span class="diff <%= css_class %>"><%= diff.round(2) %> (<%= percent.round(2) %>%)</span></h2>
-    <p><%= today[:tick].strftime("%b %-d, %H:%M UTC") %></p>
+    <p><%= today[:tick].strftime("%b %-d, %Y %H:%M UTC") %></p>
   <% end %>
 </div>
 <div class="row">

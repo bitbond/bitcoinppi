@@ -241,7 +241,7 @@ function updateHighlight() {
       return v ? null : "none";
     });
 
-  legendDate.text(moment(d.tick).format("MMM D, YYYY"));
+  legendDate.text(moment(d.tick).format("MMM D, YYYY HH:MM UTC"));
   legend.selectAll("li").select("span.current-value")
     .text(function(d) {
       var index = tickBisector.left(d.values, time, 1);
