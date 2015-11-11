@@ -258,3 +258,18 @@ svg.append("rect")
 // initial render
 render();
 
+// resize
+function resizeChart() {
+  width = parseInt(d3.select("#chart").style("width"), 10);
+  width = width - margin.left - margin.right;
+
+  x.range([0, width]);
+
+  yAxis.innerTickSize(-width);
+
+  d3.select("#chart").select("svg").attr("width", width + margin.left + margin.right);
+  svg.select(".overlay").attr("width", width);
+
+  render();
+};
+

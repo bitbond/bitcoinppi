@@ -49,7 +49,7 @@ $(function(){
   });
 
   $(window).on("resize-end", function() {
-    // drawChart();
+    resizeChart();
   });
 
   form.on("click", "#download-csv", function(event) {
