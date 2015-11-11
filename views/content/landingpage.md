@@ -51,7 +51,12 @@ every imaginable way. If you use it for something cool, we would love to hear ab
 
 ## Volatility of the global bitcoinppi 📈
 
-[insert volatility chart here]
+<div class="row">
+  <div id="vol_30d_chart" class="col-md-8 chart">
+  </div>
+  <div id="vol_30d_legend" class="col-md-4 legend">
+  </div>
+</div>
 
 The bitcoinppi volatility measures the average daily return volatility of of the global bitcoinppi over the last 30 days
 and expresses it as an annualized value.

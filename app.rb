@@ -51,6 +51,14 @@ helpers do
     end
   end
 
+  def timeseries
+    @timeseries ||= begin
+      timeseries = Timeseries.new(params)
+      timeseries.validate!
+      timeseries
+    end
+  end
+
 end
 
 before do
@@ -64,9 +72,9 @@ error Timeseries::Invalid do
 end
 
 get "/" do
-  @timeseries = Timeseries.new(params)
-  @dataset = Bitcoinppi.global_ppi(@timeseries)
-  @country_names = Bitcoinppi.country_names(@timeseries)
+  @dataset = Bitcoinppi.global_ppi(timeseries)
+  @country_names = Bitcoinppi.country_names(timeseries)
+  @vol_30d = Bitcoinppi.annualized_30_day_return_volatility(timeseries)
   erb :landingpage
 end
 
@@ -75,15 +83,19 @@ get "/v:version/spot", provides: %i[json] do
 end
 
 get "/v:version/global_ppi", provides: %i[json csv] do
-  dataset_response :global_ppi, Bitcoinppi.global_ppi(params)
+  dataset_response :global_ppi, Bitcoinppi.global_ppi(timeseries)
 end
 
 get "/v:version/countries", provides: %i[json csv] do
-  dataset_response :countries, Bitcoinppi.countries(params)
+  dataset_response :countries, Bitcoinppi.countries(timeseries)
 end
 
 get "/v:version/countries/:country", provides: %i[json csv] do |_version, country|
-  dataset_response country, Bitcoinppi.countries(params).where(country: country)
+  dataset_response country, Bitcoinppi.countries(timeseries).where(country: country)
+end
+
+get "/v:version/vol_30d", provides: %i[json csv] do
+  dataset_response :vol_30d, Bitcoinppi.annualized_30_day_return_volatility(timeseries)
 end
 
 get "/pages/:name" do |name|

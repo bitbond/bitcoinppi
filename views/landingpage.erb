@@ -10,14 +10,16 @@
     <p><%= today[:tick].strftime("%b %-d, %Y %H:%M UTC") %></p>
   <% end %>
 </div>
+
 <div class="row">
-  <div id="chart" class="col-md-9"></div>
-  <div id="legend" class="col-md-3">
+  <div id="chart" class="col-md-9 chart"></div>
+  <div id="legend" class="col-md-3 legend">
   </div>
 </div>
+
 <div class="row">
   <div class="col-md-12">
-    <%= content(:landingpage) %>
+    <%= content(:landingpage).sub("{{vol_30d_chart}}", yield_content(:vol_30d_chart)) %>
   </div>
 </div>
 
@@ -59,6 +61,9 @@
     #chart {
       height: 350px;
     }
+    #vol_30d_chart {
+      height: 150px;
+    }
     .axis path,
     .axis line {
       fill: none;
@@ -91,16 +96,16 @@
       pointer-events: all;
     }
 
-    #legend ul {
+    .legend ul {
       margin: 0;
       padding: 0;
       list-style: none;
     }
-    #legend li {
+    .legend li {
       font-weight: bold;
       position: relative;
     }
-    #legend li .remove {
+    .legend li .remove {
       position: absolute;
       display: block;
       width: 20px;
@@ -110,10 +115,10 @@
       cursor: pointer;
       opacity: 0.4;
     }
-    #legend li:hover .remove {
+    .legend li:hover .remove {
       opacity: 1.0;
     }
-    #legend li span.current-value {
+    .legend li span.current-value {
       color: black;
       font-weight: normal;
     }
@@ -126,7 +131,9 @@
   <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
   <script type="application/json" id="data"><%= @dataset.as_json.to_json %></script>
   <script type="application/json" id="countryNames"><%= @country_names.to_json %></script>
-  <script type="text/javascript" src="/chart.js"></script>
+  <script type="application/json" id="vol_30d"><%= @vol_30d.as_json.to_json %></script>
+  <script type="text/javascript" src="/ppi_chart.js"></script>
+  <script type="text/javascript" src="/volatility_chart.js"></script>
   <script type="text/javascript" src="/interactivity.js"></script>
 <% end %>
 

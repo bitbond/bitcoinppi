@@ -142,17 +142,27 @@ module Bitcoinppi
       .order(Sequel.desc(:tick))
   end
 
-  def ppi(params)
+  def annualized_30_day_return_volatility(params = {})
     timeseries = params.is_a?(Timeseries) ? params : Timeseries.new(params)
-    dataset = Bitcoinppi.within_timeseries(timeseries)
-      .select{[
-        bitcoinppi__tick.as(:tick),
-        country,
-        global_ppi,
-        sum(global_ppi).as(:global_ppi)
-      ]}
-      .where(rank: 1)
-      .order(:bitcoinppi__tick)
+    timeseries.tick = "1 day"
+    timeseries.from = timeseries.from - 30.days < Timeseries::OLDEST ? Timeseries::OLDEST : timeseries.from - 30.days
+    dataset = global_ppi(timeseries).order(:tick)
+      .from_self
+        .select(:tick, :global_ppi)
+        .select_append{ count(global_ppi).over(frame: "rows 29 preceding").as(:preceding_rows) }
+        .select_append{ ln(global_ppi / lag(global_ppi).over(order: :tick)).as(:daily_return) }
+        .from_self
+          .select(:tick, :global_ppi, :preceding_rows)
+          .select_append{
+            round(
+              (stddev(daily_return).over(order: :tick, frame: "rows 29 preceding") * sqrt(365) * 100).cast(:numeric),
+              2
+            ).as(:vol_30d)
+          }
+          .from_self
+            .select(:tick, :global_ppi, :vol_30d)
+            .where(preceding_rows: 30)
+            .exclude(vol_30d: nil)
   end
 
   extend self

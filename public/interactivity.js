@@ -35,10 +35,8 @@ $(function(){
       var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + queryString;
       window.history.pushState({path: newurl}, "", newurl);
     }
-    refetchData(queryString).done(function() {
-      render();
-    });
-    // form.trigger("submit");
+    ppiChart.refetchData(queryString).done(function() { ppiChart.render(); });
+    volatilityChart.refetchData(queryString).done(function() { volatilityChart.render(); });
   });
 
   $(window).resize(function() {
@@ -49,7 +47,8 @@ $(function(){
   });
 
   $(window).on("resize-end", function() {
-    resizeChart();
+    ppiChart.resizeChart();
+    volatilityChart.resizeChart();
   });
 
   form.on("click", "#download-csv", function(event) {

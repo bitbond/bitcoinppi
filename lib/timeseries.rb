@@ -77,6 +77,12 @@ class Timeseries
     ensure_within_bounds
   end
 
+  def from=(value)
+    from = parse(value)
+    ensure_within_bounds(from)
+    @from = from
+  end
+
   # Public: validates from, to and tick values. Use before executing a timeseries from user input.
   #
   # Raises Timeseries::Invalid if tick is invalid
@@ -147,9 +153,9 @@ class Timeseries
     self.class.parse(string)
   end
 
-  def ensure_within_bounds
+  def ensure_within_bounds(from = @from, to = @to)
     raise Invalid, "from is out of bounds (oldest value 2011-07-01)" if from < OLDEST
-    raise Invalid, "negative interval" if interval.to_i < 0
+    raise Invalid, "negative interval" if (to.to_i - from.to_i) < 0
   end
 
   def ensure_valid_tick(tick = @tick)
