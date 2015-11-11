@@ -141,7 +141,7 @@ function render() {
   y.domain([min - min * 0.15, max + max * 0.05]);
 
   var lineNames = data.map(function(d) { return d.key; });
-  color.domain(lineNames);
+  color.domain(labels.map(function(d) { return d.key; }));
 
   // Update Axes
   xAxis.ticks(5);
@@ -195,7 +195,10 @@ function render() {
     .attr("value", function(d) { return d.key; })
     .text(function(d) { return d.label; });
 
-  countryOption.sort(function(a, b) { return a.label.localeCompare(b.label); });
+  countryOption.sort(function(a, b) {
+    if (a.key == "none") { return -1; }
+    return a.label.localeCompare(b.label);
+  });
 
   countryOption.exit()
     .remove();
