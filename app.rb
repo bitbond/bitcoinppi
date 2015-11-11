@@ -76,8 +76,8 @@ end
 get "/" do
   @timeseries = Timeseries.new(params)
   @timeseries.tick = "7 days" if @timeseries.interval >= 2.years
-  dataset = Bitcoinppi.global_ppi(@timeseries)
-  @data_table = DataTable.new(dataset)
+  @dataset = Bitcoinppi.global_ppi(@timeseries)
+  @data_table = DataTable.new(@dataset)
   @data_table.set_column(:tick, label: "Time", type: "date") { |tick| "Date(%s, %s, %s, %s, %s)" % [tick.year, tick.month - 1, tick.day, tick.hour, tick.min] }
   @data_table.set_column(:global_ppi, label: "global ppi", type: "number") { |ppi| ppi ? ppi.to_f.to_s : nil }
   erb :landingpage

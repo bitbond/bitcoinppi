@@ -7,6 +7,7 @@ module Bitcoinppi
     refresh_tick_tables
   end
 
+  # Public: refresh per tick tables
   def refresh_tick_tables
     now = DateTime.now.utc
     (2011..now.year).each do |year|

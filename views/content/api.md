@@ -8,12 +8,13 @@ In general the data is updated every 15 minutes. Caching rules are set to store 
 ### Versions
 
 The current version must be prepended to all API requests.
-A request `/spot` should be made as `/v1.0/spot`.
+A request `/spot` should be made as `/v1.1/spot`.
 
 Additional features will be added to the current version. But breaking features or bugfixes will increment the version.
-This ensures that older clients can continue to work with the API as expected.
+This ensures (for a certain grace period) that older clients can continue to work with the API as expected.
 
-* `/v1.0` The initial release.
+* `/v1.1` Current release.
+* `/v1.0` The initial release. **no longer accessible**
 
 ### JSON
 
@@ -46,7 +47,7 @@ The param **tick** must not be given, and by default the lowest resolution avail
   <dt>tick</dt>
   <dd>
     default: lowest available for given timeframe<br>
-    allowed: 7 days, 1 day, 12 hours, 6 hours, 1 hour, 30 minutes, 15 minutes
+    allowed: 7 days, 1 day, 12 hours, 1 hour, 15 minutes
   </dd>
 </dl>
 
@@ -56,7 +57,7 @@ This endpoint returns data within the last 24 hours. **GET parameters** are igno
 
 **Example:**
 
-    curl http://bitcoinppi.com/v1.0/spot
+    curl http://bitcoinppi.com/v1.1/spot
 
 **Response:**
 
@@ -75,29 +76,25 @@ This endpoint returns data within the last 24 hours. **GET parameters** are igno
       "countries": {
         "CN": {
           "time": "2015-10-15T10:44:12.000+02:00",
+          "tick": "2015-10-15T10:30:00.000+02:00",
           "country": "CN",
           "currency": "CNY",
           "bitcoin_price": "1652.15",
           "bigmac_price": "17.0",
           "weight": "0.1",
           "local_ppi": "97.1852941176470588",
-          "global_ppi": "9.71852941176470588",
-          "tick": "2015-10-15T10:30:00.000+02:00",
-          "avg_24h_global_ppi": "9.626111182934712347",
           "avg_24h_local_ppi": "96.2611118293471235"
         },
         ...
         "US": {
           "time": "2015-10-15T10:44:12.000+02:00",
+          "tick": "2015-10-15T10:30:00.000+02:00",
           "country": "US",
           "currency": "USD",
           "bitcoin_price": "255.06",
           "bigmac_price": "4.79",
           "weight": "0.05",
           "local_ppi": "53.2484342379958246",
-          "global_ppi": "2.66242171189979123",
-          "tick": "2015-10-15T10:30:00.000+02:00",
-          "avg_24h_global_ppi": "2.660231939250728395",
           "avg_24h_local_ppi": "53.2046387850145679"
         }
       }   
@@ -113,11 +110,11 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
 
 **Examples:**
 
-    curl http://bitcoinppi.com/v1.0/global_ppi
+    curl http://bitcoinppi.com/v1.1/global_ppi
 
-    curl 'http://bitcoinppi.com/v1.0/global_ppi?from=2011-07-01&to=2013-04-30'
+    curl 'http://bitcoinppi.com/v1.1/global_ppi?from=2011-07-01&to=2013-04-30'
 
-    curl 'http://bitcoinppi.com/v1.0/global_ppi?from=2011-07-01&to=2013-04-30&tick=7+days'
+    curl 'http://bitcoinppi.com/v1.1/global_ppi?from=2011-07-01&to=2013-04-30&tick=7+days'
 
 **Response:**
 
@@ -151,11 +148,11 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
 
 **Examples:**
 
-    curl http://bitcoinppi.com/v1.0/countries
+    curl http://bitcoinppi.com/v1.1/countries
 
-    curl 'http://bitcoinppi.com/v1.0/countries?from=2014-07-01&to=2015-04-30'
+    curl 'http://bitcoinppi.com/v1.1/countries?from=2014-07-01&to=2015-04-30'
 
-    curl 'http://bitcoinppi.com/v1.0/countries?from=2014-07-01&to=2015-04-30&tick=7+days'
+    curl 'http://bitcoinppi.com/v1.1/countries?from=2014-07-01&to=2015-04-30&tick=7+days'
 
 **Response:**
 
@@ -169,29 +166,25 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
       "countries": [
         {
           "time": "2015-10-15T10:44:12.000+02:00",
+          "tick": "2015-10-15T00:00:00.000+02:00",
           "country": "DE",
           "currency": "EUR",
           "bitcoin_price": "221.75",
           "bigmac_price": "3.59",
           "weight": "0.03",
           "local_ppi": "61.7688022284122563",
-          "global_ppi": "1.853064066852367689",
-          "tick": "2015-10-15T00:00:00.000+02:00",
-          "avg_24h_global_ppi": "1.952150885169753188",
           "avg_24h_local_ppi": "65.0716961723251063"
         },
         ...
         {
           "time": "2014-10-15T02:00:00.000+02:00",
+          "tick": "2014-10-15T00:00:00.000+02:00",
           "country": "US",
           "currency": "USD",
           "bitcoin_price": "394.45",
           "bigmac_price": "4.8",
           "weight": "0.05",
           "local_ppi": "82.1770833333333333",
-          "global_ppi": "4.108854166666666665",
-          "tick": "2014-10-15T00:00:00.000+02:00",
-          "avg_24h_global_ppi": "2.836662227607797057",
           "avg_24h_local_ppi": "56.7332445521559411"
         }
       ]
@@ -207,11 +200,11 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
 
 **Examples:**
 
-    curl http://bitcoinppi.com/v1.0/countries/DE
+    curl http://bitcoinppi.com/v1.1/countries/DE
 
-    curl 'http://bitcoinppi.com/v1.0/countries/DE?from=2014-07-01&to=2015-04-30'
+    curl 'http://bitcoinppi.com/v1.1/countries/DE?from=2014-07-01&to=2015-04-30'
 
-    curl 'http://bitcoinppi.com/v1.0/countries/DE?from=2014-07-01&to=2015-04-30&tick=7+days'
+    curl 'http://bitcoinppi.com/v1.1/countries/DE?from=2014-07-01&to=2015-04-30&tick=7+days'
 
 **Response:**
 
@@ -231,9 +224,7 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
           "bigmac_price": "3.59",
           "weight": "0.03",
           "local_ppi": "61.7688022284122563",
-          "global_ppi": "1.853064066852367689",
           "tick": "2015-10-15T00:00:00.000+02:00",
-          "avg_24h_global_ppi": "1.952150885169753188",
           "avg_24h_local_ppi": "65.0716961723251063"
         },
         ...
@@ -245,9 +236,7 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
           "bigmac_price": "3.67",
           "weight": "0.03",
           "local_ppi": "85.0408719346049046",
-          "global_ppi": "2.551226158038147138",
           "tick": "2014-10-15T00:00:00.000+02:00",
-          "avg_24h_global_ppi": "1.952150885169753188",
           "avg_24h_local_ppi": "65.0716961723251063"
         }
       ]
