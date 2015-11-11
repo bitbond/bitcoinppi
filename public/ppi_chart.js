@@ -1,6 +1,6 @@
 var ppiChart = (function() {
-  var margin = {top: 20, right: 50, bottom: 30, left: 50},
-      width = $("#chart").width()- margin.left - margin.right,
+  var margin = {top: 10, right: 0, bottom: 20, left: 30},
+      width = $("#chart").width() - margin.left - margin.right,
       height = $("#chart").height() - margin.top - margin.bottom;
 
   var x = d3.time.scale().range([0, width]);
@@ -264,8 +264,7 @@ var ppiChart = (function() {
 
   // resize
   function resizeChart() {
-    width = parseInt(d3.select("#chart").style("width"), 10);
-    width = width - margin.left - margin.right;
+    width = $("#chart").width() - margin.left - margin.right;
 
     x.range([0, width]);
 
