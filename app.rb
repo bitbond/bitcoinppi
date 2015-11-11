@@ -72,14 +72,29 @@ error Timeseries::Invalid do
 end
 
 get "/" do
+  @spot = Bitcoinppi.spot
   @dataset = Bitcoinppi.global_ppi(timeseries)
   @country_names = Bitcoinppi.country_names(timeseries)
   @vol_30d = Bitcoinppi.annualized_30_day_return_volatility(timeseries)
   erb :landingpage
 end
 
-get "/v:version/spot", provides: %i[json] do
-  json spot: Bitcoinppi.spot, countries: Bitcoinppi.spot_countries
+get "/v:version/spot", provides: %i[json csv] do
+  if request.preferred_type.to_s == "text/csv"
+    attachment "spot.csv"
+    Util.array_of_hashes_to_csv([Bitcoinppi.spot])
+  else
+    json spot: Bitcoinppi.spot, countries: Bitcoinppi.spot_countries
+  end
+end
+
+get "/v:version/spot_countries", provides: %i[json csv] do
+  if request.preferred_type.to_s == "text/csv"
+    attachment "spot_countries.csv"
+    Util.array_of_hashes_to_csv(Bitcoinppi.spot_countries.values)
+  else
+    json countries: Bitcoinppi.spot_countries
+  end
 end
 
 get "/v:version/global_ppi", provides: %i[json csv] do

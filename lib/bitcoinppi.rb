@@ -81,9 +81,15 @@ module Bitcoinppi
     now = DateTime.now
     timeframe = {from: now - 24.hours, to: now, tick: "15 minutes"}
     dataset = global_ppi(timeframe)
-    closing = dataset.first || {global_ppi: nil}
-    avg_global_ppi = dataset.from_self.select { avg(global_ppi) }.single_value
-    closing.merge(avg_24h_global_ppi: avg_global_ppi)
+    open = (dataset.last || {})[:global_ppi]
+    closing = dataset.first || {}
+    avg_24h_global_ppi = dataset.from_self.select { avg(global_ppi) }.single_value
+    {
+      tick: closing[:tick],
+      global_ppi: closing[:global_ppi],
+      avg_24h_global_ppi: avg_24h_global_ppi,
+      global_ppi_24h_ago: open
+    }
   end
 
   # Public: retrieve the latest global ppi, local ppi spot values over the last 24 hours, including an 24 hour average
