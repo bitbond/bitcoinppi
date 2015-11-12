@@ -1,5 +1,5 @@
 var ppiChart = (function() {
-  var margin = {top: 10, right: 15, bottom: 20, left: 20},
+  var margin = {top: 10, right: 15, bottom: 20, left: 30},
       width = $("#chart").width() - margin.left - margin.right,
       height = $("#chart").height() - margin.top - margin.bottom;
 
