@@ -90,9 +90,15 @@ Note that the bitcoinppi doesn't use the actual Big Mac index itself.
 Instead we leverage the fact that the Big Mac index tracks a large number of local Big Mac prices in a
 reliable way on a regular basis. Whenever there are new prices available from the Big Mac Index they will be imported into the bitcoinppi.
 
+The Big Mac is a hamburger that is served in [Mc Donald's](http://www.mcdonalds.com) fast food restaurants
+in approximately 40 countries around the world.
+
 #### Bitcoin price data sources ฿
 Bitcoin price data is sourced from [BitcoinAverage](https://bitcoinaverage.com) and [bitcoincharts](http://www.bitcoincharts.com/).
 We only use prices of local markets that are available to consumers who buy and sell bitcoins in those markets.
+
+For some historical bitcoin prices (until October 2015) we used the [CoinDesk bitcoin price index BPI](http://www.coindesk.com/price/).
+In these cases we had to rely on cross-rates.
 
 #### Population and GDP per capita for weights 🏢
 Macroeconomic data is sourced from [Trading Economics](http://www.tradingeconomics.com). Historical values for population and GDP per capita
