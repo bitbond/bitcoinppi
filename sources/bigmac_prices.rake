@@ -5,7 +5,7 @@ namespace :sources do
     require "open-uri"
     require "csv"
 
-    table = CSV.parse(open("https://docs.google.com/spreadsheet/ccc?key=1RKdZ_mdyOZKyIHyqJmg84-WE-SiYXjtOmVkaexn57YI&output=csv"))
+    table = CSV.parse(open("https://docs.google.com/spreadsheets/d/1RKdZ_mdyOZKyIHyqJmg84-WE-SiYXjtOmVkaexn57YI/export?format=csv"))
     headers = table.shift(2)
     _, *countries = headers[0]
     _, *currencies = headers[1]

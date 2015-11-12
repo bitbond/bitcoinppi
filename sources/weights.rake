@@ -5,7 +5,7 @@ namespace :sources do
     require "open-uri"
     require "csv"
 
-    table = CSV.parse(open("https://docs.google.com/spreadsheet/ccc?key=1UVDLqNxqLEjwxkmjvVcCpTzxiq95aPvU5nLLatOwecA&output=csv"))
+    table = CSV.parse(open("https://docs.google.com/spreadsheets/d/1UVDLqNxqLEjwxkmjvVcCpTzxiq95aPvU5nLLatOwecA/export?format=csv"))
     _, *countries = table.shift
 
     table.each do |date, *data|
