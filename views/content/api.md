@@ -22,8 +22,14 @@ The API defaults to JSON responses.
 
 ### CSV
 
-All endpoints except for `/spot` allow for csv responses. A csv response can be initiated by appending `.csv` to the request path.
+All endpoints allow for csv responses. A csv response can be initiated by appending `.csv` to the request path.
 The csv is **utf-8** encoded and has a `,` **comma as field separator**. Each line is separated with a **unix newline character** `\n`.
+
+**Example**:
+
+    curl http://bitcoinppi.com/v1.1/spot.csv
+
+    curl http://bitcoinppi.com/v1.1/countries/DE.csv?from=2015-01-01&to=2015-11-14
 
 ### GET parameters
 
@@ -54,19 +60,14 @@ The param **tick** must not be given, and by default the lowest resolution avail
 ### GET /spot
 
 This endpoint returns data within the last 24 hours. **GET parameters** are ignored.
+Note the JSON response returns both countries and spot data for convenience. If you request `/v1.1/spot.csv` for retrieving CSV data, the response will be limited to spot data. See **/spot_countries** for countries spot data.
 
-**Example:**
+**JSON Example:**
 
     curl http://bitcoinppi.com/v1.1/spot
 
 **Response:**
 
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    Cache-Control: public, max-age=900
-    Content-Length: 9572
-    
-    
     {
       "spot": {
         "tick": "2015-10-15T10:30:00.000+02:00",
@@ -100,6 +101,63 @@ This endpoint returns data within the last 24 hours. **GET parameters** are igno
       }   
     }
 
+**CSV Example:**
+
+    curl http://bitcoinppi.com/v1.1/spot.csv
+
+**Response:**
+
+    tick,global_ppi,avg_24h_global_ppi,global_ppi_24h_ago
+    2015-11-14 11:45:00,99.606549,99.2257244270833333,99.03269
+
+### GET /spot_countries
+
+This endpoint only returns countries spot data.
+
+**JSON Example:**
+
+    curl http://bitcoinppi.com/v1.1/spot_countries
+
+**Response:**
+
+    {
+      "countries": {
+        "CN": {
+          "time": "2015-10-15T10:44:12.000+02:00",
+          "tick": "2015-10-15T10:30:00.000+02:00",
+          "country": "CN",
+          "currency": "CNY",
+          "bitcoin_price": "1652.15",
+          "bigmac_price": "17.0",
+          "weight": "0.1",
+          "local_ppi": "97.1852941176470588",
+          "avg_24h_local_ppi": "96.2611118293471235"
+        },
+        ...
+        "US": {
+          "time": "2015-10-15T10:44:12.000+02:00",
+          "tick": "2015-10-15T10:30:00.000+02:00",
+          "country": "US",
+          "currency": "USD",
+          "bitcoin_price": "255.06",
+          "bigmac_price": "4.79",
+          "weight": "0.05",
+          "local_ppi": "53.2484342379958246",
+          "avg_24h_local_ppi": "53.2046387850145679"
+        }
+      }   
+    }
+
+**CSV Example:**
+
+    curl http://bitcoinppi.com/v1.1/spot_countries.csv
+
+**Response:**
+
+    time,tick,country,currency,bitcoin_price,bigmac_price,weight,local_ppi,avg_24h_local_ppi
+    2015-11-14 11:57:04,2015-11-14 11:45:00,IN,INR,19938.46,116.25,0.086645,171.513634,171.9353557173913043
+    ...
+
 ### GET /global_ppi
 
 This endpoint returns all global_ppi values over a defined time series.
@@ -108,7 +166,7 @@ By default it returns data from the last year at a resolution of 1 day.
 
 The default response type is **JSON**. To receive a **CSV** response, append `.csv` to the request path.
 
-**Examples:**
+**JSON Examples:**
 
     curl http://bitcoinppi.com/v1.1/global_ppi
 
@@ -118,12 +176,6 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
 
 **Response:**
 
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    Cache-Control: public, max-age=900
-    Content-Length: 28515
-
-    
     {
       "global_ppi": [
         {
@@ -138,6 +190,20 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
       ]
     }
 
+**CSV Examples:**
+
+    curl http://bitcoinppi.com/v1.1/global_ppi.csv
+
+    curl 'http://bitcoinppi.com/v1.1/global_ppi.csv?from=2011-07-01&to=2013-04-30'
+
+    curl 'http://bitcoinppi.com/v1.1/global_ppi.csv?from=2011-07-01&to=2013-04-30&tick=7+days'
+
+**Response:**
+
+    tick,global_ppi
+    2015-11-14 00:00:00,99.606549
+    ...
+
 ### GET /countries
 
 This endpoint returns all ppi values of all countries, over a defined time series.
@@ -146,7 +212,7 @@ By default it returns data from the last year at a resolution of 1 day.
 
 The default response type is **JSON**. To receive a **CSV** response, append `.csv` to the request path.
 
-**Examples:**
+**JSON Examples:**
 
     curl http://bitcoinppi.com/v1.1/countries
 
@@ -156,12 +222,6 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
 
 **Response:**
 
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    Cache-Control: public, max-age=900
-    Content-Length: 3402397
-
-    
     {
       "countries": [
         {
@@ -190,6 +250,20 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
       ]
     }
 
+**CSV Examples:**
+
+    curl http://bitcoinppi.com/v1.1/countries.csv
+
+    curl 'http://bitcoinppi.com/v1.1/countries.csv?from=2014-07-01&to=2015-04-30'
+
+    curl 'http://bitcoinppi.com/v1.1/countries.csv?from=2014-07-01&to=2015-04-30&tick=7+days'
+
+**Response:**
+
+    time,tick,country,currency,bitcoin_price,bigmac_price,weight,local_ppi
+    2015-11-14 11:58:23,2015-11-14 00:00:00,GB,GBP,227.0,2.89,0.025077,78.546713
+    ...
+
 ### GET /countries/:country
 
 This endpoint returns all ppi values by country, over a defined time series. The part **:country** should be set as an **uppercase ISO3166 alpha2** country code.
@@ -198,7 +272,7 @@ By default it returns data from the last year at a resolution of 1 day.
 
 The default response type is **JSON**. To receive a **CSV** response, append `.csv` to the request path.
 
-**Examples:**
+**JSON Examples:**
 
     curl http://bitcoinppi.com/v1.1/countries/DE
 
@@ -208,12 +282,6 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
 
 **Response:**
 
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    Cache-Control: public, max-age=900
-    Content-Length: 121359
-
-    
     {
       "DE": [
         {
@@ -241,4 +309,18 @@ The default response type is **JSON**. To receive a **CSV** response, append `.c
         }
       ]
     }
+
+**JSON Examples:**
+
+    curl http://bitcoinppi.com/v1.1/countries/DE.csv
+
+    curl 'http://bitcoinppi.com/v1.1/countries/DE.csv?from=2014-07-01&to=2015-04-30'
+
+    curl 'http://bitcoinppi.com/v1.1/countries/DE.csv?from=2014-07-01&to=2015-04-30&tick=7+days'
+
+**Response:**
+
+    time,tick,country,currency,bitcoin_price,bigmac_price,weight,local_ppi
+    2015-11-14 11:58:23,2015-11-14 00:00:00,DE,EUR,308.96,3.59,0.029394,86.061281
+    ...
 

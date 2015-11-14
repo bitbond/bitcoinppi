@@ -96,6 +96,12 @@ _Note: Some configurations require the database user to have a password._
       filename: Title of the page
       api: API Documentation
 
+* Adding a meta description tags by adding the page path to `meta_descriptions` in `config/app.yml`:
+
+    meta_descriptions:
+      /: The bitcoin purchasing power index (bitcoinppi) tells you how many Big Mac hamburgers you can buy with one bitcoin.
+      /pages/api: ...
+
 ## Seed data
 
 * Make sure you have all prerequisites installed (see Development)

@@ -4,8 +4,11 @@
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge, chrome=1">
   <meta name=viewport content="width=device-width, initial-scale=1">
-  <meta property="fb:admins" content="61307200"/>
+  <meta property="fb:admins" content="61307200">
   <title><%= page_title %></title>
+  <% if description = Config["meta_descriptions"][request.path] %>
+    <meta property="description" content="<%= description %>">
+  <% end %>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
