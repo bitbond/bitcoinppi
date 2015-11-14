@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if pgrep -f thin; then
+if pgrep -f bitcoinppi-app; then
   command=restart
 else
   command=start
@@ -8,7 +8,7 @@ fi
 
 export RACK_ENV=production
 echo "restarting Thin"
-./bin/thin --servers 4 --environment production --socket /var/tmp/bitcoinppi.sock --pid tmp/thin.pid --log log/thin.log --daemonize $command
+./bin/thin --tag bitcoinppi-app --servers 4 --environment production --socket /var/tmp/bitcoinppi.sock --pid tmp/thin.pid --log log/thin.log --daemonize $command
 
 echo "purging landingpage cache"
 curl -XPURGE -H'Host: bitcoinppi.com' http://127.0.0.1/
