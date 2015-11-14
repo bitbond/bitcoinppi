@@ -13,6 +13,7 @@ require "timeliness"
 Root = Pathname.new(File.dirname(__FILE__))
 Config = YAML.load_file(Root.join("config", "app.yml"))
 Sequel.extension :migration
+require_relative "lib/sequel_patches.rb"
 DB = Sequel.connect("postgres://#{Root.join("config", ".database_credentials").read.strip}@localhost/bitcoinppi_#{ENV["RACK_ENV"]}")
 Sequel::Migrator.run(DB, "migrations")
 

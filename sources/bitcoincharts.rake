@@ -12,7 +12,7 @@ namespace :sources do
     time = Time.at(json["timestamp"])
     values = json.map do |currency, data|
       next unless currencies.include?(currency)
-      next unless price = data["24h"]
+      next if BigDecimal.new(price = data["24h"]).zero?
       [currency, time, price, "bitcoincharts"]
     end.compact
     DB[:bitcoin_prices].import([:currency, :time, :price, :source], values)
