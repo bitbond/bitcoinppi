@@ -1,5 +1,5 @@
 var ppiChart = (function() {
-  var margin = {top: 10, right: 15, bottom: 20, left: 20},
+  var margin = {top: 10, right: 15, bottom: 20, left: 30},
       width = $("#chart").width() - margin.left - margin.right,
       height = $("#chart").height() - margin.top - margin.bottom;
 
@@ -91,10 +91,10 @@ var ppiChart = (function() {
   };
 
   var globalPPI = JSON.parse(document.getElementById("data").innerHTML);
-  setData("global_ppi", "Global PPI", globalPPI);
+  setData("global_ppi", "Global bitcoinppi", globalPPI);
 
   var selectionList = JSON.parse(document.getElementById("countryNames").innerHTML);
-  var labels = [{key: "global_ppi", label: "Global PPI"}].concat(selectionList);
+  var labels = [{key: "global_ppi", label: "Global bitcoinppi"}].concat(selectionList);
 
   // Other elements
   var xAxisGroup = svg.append("g")
@@ -188,7 +188,7 @@ var ppiChart = (function() {
       .remove();
 
     // Country select
-    var countriesForSelect = [{key: "none", label: "Select Country"}].concat(selectionList);
+    var countriesForSelect = [{key: "none", label: "Add local bitcoinppi"}].concat(selectionList);
     var countryOption = countrySelect.selectAll("option").data(countriesForSelect, function(d) { return d.key; });
 
     countryOption.enter()
