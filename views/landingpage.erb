@@ -18,12 +18,12 @@
     <% end %>
   </div>
   <!-- AddToAny BEGIN -->
-  <div class="col-md-4 a2a_kit a2a_kit_size_32 a2a_default_style">
-    <a class="a2a_button_twitter"></a>
-    <a class="a2a_button_reddit"></a>
-    <a class="a2a_button_hacker_news"></a>
-    <a class="a2a_button_facebook"></a>
-    <a class="a2a_button_google_plus"></a>
+  <div class="col-md-4 pull-right a2a_kit a2a_kit_size_32 a2a_default_style">
+    <a class="a2a_button_google_plus pull-right"></a>
+    <a class="a2a_button_facebook pull-right"></a>
+    <a class="a2a_button_hacker_news pull-right"></a>
+    <a class="a2a_button_reddit pull-right"></a>
+    <a class="a2a_button_twitter pull-right"></a>
   </div>
   <!-- AddToAny END -->
 </div>
@@ -41,7 +41,7 @@
 </div>
 
 <% content_for :navbar do %>
-  <form id="timeframe-form" class="navbar-form navbar-left" role="search" method="GET">
+  <form id="timeframe-form" class="navbar-form navbar-right" role="search" method="GET">
     <input type="hidden" name="from" value="<%= @timeseries.from_truncated.strftime("%Y-%m-%d %H:%M") %>">
     <input type="hidden" name="to" value="<%= @timeseries.to_truncated.strftime("%Y-%m-%d %H:%M") %>">
 
