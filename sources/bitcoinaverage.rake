@@ -11,9 +11,9 @@ namespace :sources do
 
     values = json.map do |currency, data|
       next unless currencies.include?(currency)
-      price = data["last"] || data["24h_avg"]
-      next if BigDecimal.new(price.to_s).zero?
-      [currency, data["timestamp"], data["last"], "bitcoinaverage"]
+      price = BigDecimal.new((data["last"] || data["24h_avg"]).to_s)
+      next if price.zero?
+      [currency, data["timestamp"], price, "bitcoinaverage"]
     end.compact
     DB[:bitcoin_prices].import([:currency, :time, :price, :source], values)
 
