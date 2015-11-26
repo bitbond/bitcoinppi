@@ -6,45 +6,34 @@ meta_descriptions:
   /: The bitcoin purchasing power index (bitcoinppi) tells you how many Big Mac hamburgers you can buy with one bitcoin.
   /pages/api: Access the bitcoin purchasing power index public endpoints that return bitcoinppi data in JSON or CSV format.
 currencies:
-  - CNY
-  - INR
-  - USD
-  - NOK
-  - EUR
-  - HKD
-  - JPY
-  - EUR
-  - CAD
-  - EUR
+  - ARS
   - AUD
-  - GBP
-  - EUR
-  - SEK
-  - EUR
+  - BRL
+  - CAD
+  - CHF
+  - CLP
+  - CNY
+  - COP
+  - CZK
   - DKK
   - EUR
+  - GBP
+  - HKD
   - IDR
-  - RUB
-  - EUR
-  - BRL
-  - EUR
-  - EUR
-  - NZD
   - ILS
+  - INR
+  - JPY
   - MXN
-  - CZK
-  - PLN
-  - TRY
-  - PKR
   - MYR
-  - EUR
-  - EUR
-  - EUR
-  - EUR
-  - CLP
-  - ARS
-  - THB
-  - ZAR
+  - NOK
+  - NZD
   - PHP
-  - COP
+  - PKR
+  - PLN
+  - RUB
+  - SEK
+  - THB
+  - TRY
+  - USD
+  - ZAR
 

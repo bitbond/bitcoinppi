@@ -16,12 +16,12 @@ namespace :sources do
         country = country.alpha2
         currency = currencies[index]
         begin
-          DB[:bigmac_prices].insert(country: country, time: DateTime.parse(date), currency: currency, price: price.sub(",", ""))
-          puts "created #{country} (#{currency}) for #{date} with #{price}"
+          price.sub!(",", "")
+          DB[:bigmac_prices].insert(country: country, time: DateTime.parse(date), currency: currency, price: price)
         rescue Sequel::UniqueConstraintViolation
-          puts "already seen #{country} (#{currency}) for #{date}"
+          DB[:bigmac_prices].where(country: country, time: DateTime.parse(date), currency: currency).update(price: price)
         rescue => e
-          puts "exception raised #{country} (#{currency}) for #{date} with #{price} #{e.class.name} #{e.message}"
+          STDERR.puts "[sources:bigmac_prices][#{country} #{date} #{price}] #{e.class}: #{e.message}"
         end
       end
     end

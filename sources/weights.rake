@@ -14,12 +14,10 @@ namespace :sources do
         country = country.alpha2
         begin
           DB[:weights].insert(country: country, time: DateTime.parse(date), weight: weight)
-          puts "created #{country} for #{date} with #{weight}"
         rescue Sequel::UniqueConstraintViolation
           DB[:weights].where(country: country, time: DateTime.parse(date)).update(weight: weight)
-          puts "updating #{country} for #{date}"
         rescue => e
-          puts "exception raised #{country} for #{date} with #{weight} #{e.class.name} #{e.message}"
+          STDERR.puts "[sources:weights][#{country} #{date} #{weight}] #{e.class}: #{e.message}"
         end
       end
     end
