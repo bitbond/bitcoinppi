@@ -35,3 +35,20 @@ task update_historical: [
   Rake::Task["refresh"].invoke
 end
 
+desc "Checks whether a currency is out of date"
+task check_currencies: :boot do
+  now = Time.now
+  offending = []
+  DB[:bitcoin_prices].distinct(:currency).select(:currency, :time).order(:currency, Sequel.desc(:time)).each do |row|
+    next if (now - row[:time]).to_i < 20.minutes
+    offending << row
+  end
+  Mail.deliver do
+    delivery_method :smtp, openssl_verify_mode: "none"
+    from "alert@bitcoinppi.com"
+    to "l.rieder+bitcoinppi@gmail.com"
+    subject "Outdated currencies on bitcoinppi"
+    body offending.map { |row| "#{row[:currency]}: #{row[:time].strftime("%-d %b, %H:%M")} (#{(now - row[:time]).to_i}s behind)" }.join("\n")
+  end if offending.any?
+end
+

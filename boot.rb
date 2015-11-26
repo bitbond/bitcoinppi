@@ -9,6 +9,7 @@ require "sequel"
 require "active_support/all"
 require "global"
 require "timeliness"
+require "mail"
 
 Root = Pathname.new(File.dirname(__FILE__))
 Config = YAML.load_file(Root.join("config", "app.yml"))
