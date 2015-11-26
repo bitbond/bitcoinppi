@@ -10,6 +10,7 @@ gem "whenever"
 gem "rdiscount"
 gem "countries"
 gem "timeliness"
+gem "mail"
 
 group :test do
   gem "mocha"
