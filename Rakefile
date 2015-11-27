@@ -21,17 +21,30 @@ task refresh: :boot do
 end
 
 desc "Updates bitcoin_prices table from bitcoinaverage and refreshes bitcoinppi materialized view"
-task update_bitcoin_prices: ["sources:bitcoinaverage", "sources:bitcoincharts"] do
+task update_bitcoin_prices: :boot do
+  bitcoin_prices_update = BitcoinPricesUpdate.new(sources: [
+    BitcoinaveragePriceSource,
+    BitcoinchartsPriceSource,
+    LocalbitcoinsPriceSource,
+    CoindeskPriceSource
+  ])
+  bitcoin_prices_update.import
+  puts bitcoin_prices_update.stats.to_json
   Rake::Task["refresh"].invoke
 end
 
 desc "Updates long time sources and refreshes bitcoinppi materialized view"
 task update_historical: [
-  "sources:historical_bitcoinaverage",
-  "sources:historical_quandl",
   "sources:weights",
   "sources:bigmac_prices"
 ] do
+  bitcoin_prices_update = BitcoinPricesUpdate.new(sources: [
+    QuandlHistoricalPriceSource,
+    BitcoinaverageHistoricalPriceSource,
+    CoindeskHistoricalPriceSource
+  ])
+  bitcoin_prices_update.import
+  puts bitcoin_prices_update.stats.to_json
   Rake::Task["refresh"].invoke
 end
 
