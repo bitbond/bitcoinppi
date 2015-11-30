@@ -18,13 +18,13 @@ describe PriceSource do
     end
 
     it "should return false if the symbol is not present" do
-      assert price_source.has_currency?("EUR")
+      assert ! price_source.has_currency?("EUR")
     end
   end
 
-  describe "#values_for" do
+  describe "#rows_for" do
     it "should return the values for the given symbol" do
-      values = price_source.values_for("USD")
+      values = price_source.rows_for("USD")
       assert_equal ["USD", "Thu, 26 Nov 1984 20:16:35 -0000", BigDecimal.new("19.84"), "test"], values
     end
   end

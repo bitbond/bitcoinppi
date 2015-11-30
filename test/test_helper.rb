@@ -10,8 +10,21 @@ require_relative "../boot.rb"
 
 DatabaseCleaner.strategy = :transaction
 
+module AssertRaisesTransactionSafe
+  def assert_raises(*args)
+    if DB.in_transaction? && DB.supports_savepoints?
+      super(*args) do
+        DB.transaction(savepoint: true) { yield }
+      end
+    else
+      super(*args) { yield }
+    end
+  end
+end
+
 class MiniTest::Spec
   include Rack::Test::Methods
+  prepend AssertRaisesTransactionSafe
 
   before { DatabaseCleaner.start }
   after { DatabaseCleaner.clean }
@@ -25,10 +38,14 @@ class MiniTest::Spec
     JSON.parse(last_response.body, symbolize_names: true)
   end
 
-  def import(data)
+  def insert(data)
     data.each do |table, data|
       DB[table].import(data.shift, data)
     end
+  end
+
+  def import(data)
+    insert(data)
     Bitcoinppi.refresh
   end
 

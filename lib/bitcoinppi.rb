@@ -4,51 +4,7 @@ module Bitcoinppi
   # Public: refresh the materialized views
   def refresh
     DB.refresh_view(:bitcoinppi)
-    refresh_tick_tables
-  end
-
-  # Public: refresh per tick tables
-  def refresh_tick_tables
-    now = DateTime.now.utc
-    (2011..now.year).each do |year|
-      from = DateTime.new(year, 1, 1).utc
-      from = from < Timeseries::OLDEST ? Timeseries::OLDEST : from
-      to = from.end_of_year.end_of_day
-      Timeseries::VALID_TICKS.each do |tick|
-        name = tick.sub(" ", "_")
-        parent_table = :"bitcoinppi_#{name}"
-        DB.create_table?(parent_table) do
-          column :time,          "timestamptz",    null: false
-          column :tick,          "timestamptz",    null: false
-          column :country,       "varchar(255)",   null: false
-          column :currency,      "char(3)",        null: false
-          column :source,        "varchar(255)"
-          column :bitcoin_price, "numeric(10, 2)", null: false
-          column :bigmac_price,  "numeric(10, 2)", null: false
-          column :weight,        "numeric(7, 6)"
-          column :local_ppi,     "numeric(14, 6)", null: false
-          column :global_ppi,    "numeric(14, 6)", null: false
-        end
-        table = :"#{parent_table}_#{year}"
-        DB.create_table?(table, inherits: parent_table) do
-          constraint(:by_year, tick: from..to)
-          primary_key [:country, :tick]
-        end
-        from = DB[table].order(Sequel.desc(:tick)).get(:tick) || from
-        to = to > now ? now : to
-        begin
-          timeseries = Timeseries.new(from: from, to: to, tick: tick)
-          next if timeseries.interval < timeseries.tick_in_seconds
-          dataset = Bitcoinppi.within_timeseries(timeseries)
-            .select(:time, :tick, :country, :currency, :source, :bitcoin_price, :bigmac_price, :weight, :local_ppi, :global_ppi)
-            .where(rank: 1)
-          DB[table].insert(dataset)
-        rescue Sequel::UniqueConstraintViolation
-          from += timeseries.tick_in_seconds
-          retry
-        end
-      end
-    end
+    BitcoinppiTable.all.map(&:refresh)
   end
 
   # Public: creates a dataset with a common table expression of itself, joined with the given timeseries table

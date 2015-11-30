@@ -7,6 +7,15 @@ module Sequel
       !regclass.nil?
     end
 
+    def transaction_safe
+      if in_transaction? && supports_savepoints?
+        transaction(savepoint: true) { yield }
+      else
+        yield
+      end
+    end
+
   end
+
 end
 
