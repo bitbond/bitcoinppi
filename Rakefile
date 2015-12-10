@@ -1,8 +1,17 @@
 require "newrelic_rpm" if ENV["RACK_ENV"] == "production"
-
 Rake.add_rakelib("sources")
 
 task default: :test
+
+def send_alert_email(_subject, _body)
+  Mail.deliver do
+    delivery_method :smtp, openssl_verify_mode: "none"
+    from "alert@bitcoinppi.com"
+    to "l.rieder+bitcoinppi@gmail.com"
+    subject _subject
+    body _body
+  end
+end
 
 task :boot do
   require_relative "./boot.rb"
@@ -56,12 +65,24 @@ task check_currencies: :boot do
     next if (now - row[:time]).to_i < 20.minutes
     offending << row
   end
-  Mail.deliver do
-    delivery_method :smtp, openssl_verify_mode: "none"
-    from "alert@bitcoinppi.com"
-    to "l.rieder+bitcoinppi@gmail.com"
-    subject "Outdated currencies on bitcoinppi"
-    body offending.map { |row| "#{row[:currency]}: #{row[:time].strftime("%-d %b, %H:%M")} (#{(now - row[:time]).to_i}s behind)" }.join("\n")
-  end if offending.any?
+  if offending.any?
+    text = offending.map { |row| "#{row[:currency]}: #{row[:time].strftime("%-d %b, %H:%M")} (#{(now - row[:time]).to_i}s behind)" }.join("\n")
+    send_alert_email("Outdated currencies on bitcoinppi", text)
+  end
+end
+
+desc "Checks whether email communication works"
+task check_email_notification: :boot do
+  wise_saying = begin
+    open("http://zitatezumnachdenken.com/buddha/page/#{1 + Date.today.yday % 5}")
+      .read
+      .scan(%r{<a href="http://zitatezumnachdenken.com/buddha/\d+"><p>.+})
+      .map { |line| line =~ %r{<p>(.+)</p>} && $1 }
+      .compact
+      .sample
+  rescue
+    "Es gibt keinen Weg zum Glück. Glücklich-sein ist der Weg."
+  end
+  send_alert_email(wise_saying, "Daily email alert check, all good :) Nothing to read here, move along.")
 end
 
