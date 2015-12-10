@@ -201,7 +201,7 @@ var volatilityChart = (function() {
         return v ? null : "none";
       });
 
-    legendDate.text(moment(d.tick).format("MMM D, YYYY HH:MM UTC"));
+    legendDate.text(moment(d.tick).format("MMM D, YYYY HH:mm UTC"));
     legend.selectAll("li").select("span.current-value")
       .text(function(d) {
         var index = tickBisector.left(d.values, time, 1);
