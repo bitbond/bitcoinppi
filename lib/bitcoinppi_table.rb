@@ -39,8 +39,16 @@ class BitcoinppiTable
         .single_value
   end
 
+  def timeseries_from
+    youngest_tick_over_countries || from
+  end
+
+  def timeseries_to
+    [to, DateTime.now].min
+  end
+
   def timeseries
-    @timeseries ||= Timeseries.new(from: youngest_tick_over_countries || from, to: to, tick: tick)
+    @timeseries ||= Timeseries.new(from: timeseries_from, to: timeseries_to, tick: tick)
   end
 
   def create_tables?
