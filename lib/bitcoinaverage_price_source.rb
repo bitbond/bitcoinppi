@@ -7,6 +7,8 @@ class BitcoinaveragePriceSource < PriceSource
     json_response.each do |currency, ticker|
       price = BigDecimal.new(ticker["24h_avg"].to_s)
       next if price.zero?
+      time = DateTime.parse(ticker["timestamp"]).to_i rescue next
+      next if Time.now.to_i - time > 10.minutes
       data[currency] << [currency, ticker["timestamp"], price, "bitcoinaverage"]
     end
     data

@@ -9,6 +9,7 @@ class BitcoinchartsPriceSource < PriceSource
     json.each do |currency, ticker|
       price = BigDecimal.new(ticker["24h"].to_s)
       next if price.zero?
+      next if Time.now.to_i - time.to_i > 10.minutes
       data[currency] << [currency, time, price, "bitcoincharts"]
     end
     data
