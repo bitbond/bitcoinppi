@@ -62,7 +62,7 @@ task check_currencies: :boot do
   now = Time.now
   offending = []
   DB[:bitcoin_prices].distinct(:currency).select(:currency, :time).order(:currency, Sequel.desc(:time)).each do |row|
-    next if (now - row[:time]).to_i < 20.minutes
+    next if (now - row[:time]).to_i < 30.minutes
     offending << row
   end
   if offending.any?
