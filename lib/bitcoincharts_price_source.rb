@@ -13,14 +13,14 @@ class BitcoinchartsPriceSource < PriceSource
       data[currency] << [currency, time, price, "bitcoincharts"]
     end
     data
+  rescue => e
+    log_error(e)
+    {}
   end
 
   def json_response
     body = open("http://api.bitcoincharts.com/v1/weighted_prices.json").read
-    json = JSON.parse(body)
-  rescue => e
-    log_error(e)
-    {}
+    JSON.parse(body)
   end
 
 end

@@ -12,7 +12,7 @@ class CoindeskHistoricalPriceSource < PriceSource
     now = DateTime.now
     data = {}
     Config["currencies"].each do |symbol|
-      json = get_json(symbol, Timeseries::OLDEST, now)
+      next unless json = get_json(symbol, Timeseries::OLDEST, now)
       data[symbol] = json["bpi"].map do |time, price|
         [symbol, time, price, "coindesk"]
       end

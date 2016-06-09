@@ -25,7 +25,7 @@ class BitcoinPricesUpdate
 
   def with_every_row(&block)
     currencies.each do |currency|
-      source = sources.find { |source| source.has_currency?(currency) }
+      source = sources.find { |s| s.has_currency?(currency) }
       if source.nil?
         @missing << currency
         next
