@@ -36,7 +36,7 @@ The csv is **utf-8** encoded and has a `,` **comma as field separator**. Each li
 All endpoints except for `/spot` accept these optional parameters that let you define the timeframe and resolution.
 
 All times are expected in UTC, and **to** is expected to be later than **from**.
-For calculting the resolution, the given times will be truncated to their unit of resolution (e.g. '2015-10-14 12:47' will become '2015-10-14 12:00' when using '1 hour').
+For calculating the resolution, the given times will be truncated to their unit of resolution (e.g. '2015-10-14 12:47' will become '2015-10-14 12:00' when using '1 hour').
 The param **tick** must not be given, and by default the lowest resolution available will be chosen.
 
 <dl class="dl-horizontal">
