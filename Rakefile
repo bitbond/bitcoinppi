@@ -74,9 +74,10 @@ end
 desc "Checks whether email communication works"
 task check_email_notification: :boot do
   wise_saying = begin
-    open("http://zitatezumnachdenken.com/buddha/page/#{1 + Date.today.yday % 5}")
+    author = "seneca"
+    open("https://zitatezumnachdenken.com/#{author}/page/#{1 + Date.today.yday % 6}")
       .read
-      .scan(%r{<a href="http://zitatezumnachdenken.com/buddha/\d+"><p>.+})
+      .scan(%r{<a href="https://zitatezumnachdenken.com/#{author}/\d+"><p>.+})
       .map { |line| line =~ %r{<p>(.+)</p>} && $1 }
       .compact
       .sample

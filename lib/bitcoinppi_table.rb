@@ -6,8 +6,8 @@ class BitcoinppiTable
     column :country,       "varchar(255)",   null: false
     column :currency,      "char(3)",        null: false
     column :source,        "varchar(255)"
-    column :bitcoin_price, "numeric(10, 2)", null: false
-    column :bigmac_price,  "numeric(10, 2)", null: false
+    column :bitcoin_price, "numeric(20, 2)", null: false
+    column :bigmac_price,  "numeric(20, 2)", null: false
     column :weight,        "numeric(7, 6)"
     column :local_ppi,     "numeric(14, 6)", null: false
     column :global_ppi,    "numeric(14, 6)", null: false
