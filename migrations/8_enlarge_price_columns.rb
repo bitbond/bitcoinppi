@@ -19,6 +19,7 @@ Sequel.migration do
     end
     tables = valid_ticks.map { |tick| :"bitcoinppi_#{tick.sub(' ', '_')}" }
     tables.each do |table|
+      next unless table_exists?(table)
       alter_table(table) do
         set_column_type :bitcoin_price, "numeric(20, 2)"
         set_column_type :bigmac_price, "numeric(20, 2)"
